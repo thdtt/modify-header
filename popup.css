@@ -18,6 +18,7 @@ body {
 .container {
   background: white;
   padding: 0;
+  min-height: 600px;
 }
 
 /* Header */
