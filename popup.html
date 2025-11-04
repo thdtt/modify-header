@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modify Headers</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Modify Headers</h1>
+      <div class="header-actions">
+        <button id="exportProfilesBtn" class="btn btn-primary btn-icon" title="Export all profiles">
+          <span>📤 Export</span>
+        </button>
+        <button id="importProfilesBtn" class="btn btn-primary btn-icon" title="Import profiles">
+          <span>📥 Import</span>
+        </button>
+        <button id="createProfileBtn" class="btn btn-primary">New Profile</button>
+      </div>
+      <input type="file" id="importFileInput" accept=".json" style="display: none;">
+    </div>
+
+    <!-- Profile Form (hidden by default) -->
+    <div id="profileForm" class="profile-form hidden">
+      <h2 id="formTitle">New Profile</h2>
+
+      <div class="form-group">
+        <label for="profileName">Profile Name:</label>
+        <input type="text" id="profileName" placeholder="e.g., My API Headers" required>
+      </div>
+
+      <div class="form-group">
+        <label for="urlPattern">URL Pattern:</label>
+        <input type="text" id="urlPattern" placeholder="e.g., example.com or https://api.example.com/*" required>
+        <small>Examples: "example.com", "*.example.com", "https://api.example.com/*"</small>
+      </div>
+
+      <div class="form-group">
+        <label>Headers:</label>
+        <div id="headersContainer">
+          <!-- Headers will be dynamically added here -->
+        </div>
+        <button id="addHeaderBtn" class="btn btn-secondary">+ Add Header</button>
+      </div>
+
+      <div class="form-actions">
+        <button id="saveProfileBtn" class="btn btn-primary">Save</button>
+        <button id="cancelProfileBtn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Profiles List -->
+    <div id="profilesList" class="profiles-list">
+      <h2>Profiles</h2>
+      <div id="profilesContainer">
+        <!-- Profiles will be dynamically added here -->
+        <div class="empty-state">
+          <p>No profiles yet. Create one to get started!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="exportModal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Select Profiles to Export</h2>
+          <button class="modal-close" id="closeExportModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="select-all-container">
+            <label class="checkbox-label">
+              <input type="checkbox" id="selectAllExport">
+              <span>Select All</span>
+            </label>
+          </div>
+          <div id="exportProfilesList" class="profiles-selection-list">
+            <!-- Profile checkboxes will be added here -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="confirmExportBtn" class="btn btn-primary">Export Selected</button>
+          <button id="cancelExportBtn" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Select Profiles to Import</h2>
+          <button class="modal-close" id="closeImportModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="select-all-container">
+            <label class="checkbox-label">
+              <input type="checkbox" id="selectAllImport">
+              <span>Select All</span>
+            </label>
+          </div>
+          <div id="importProfilesList" class="profiles-selection-list">
+            <!-- Profile checkboxes will be added here -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="confirmImportBtn" class="btn btn-primary">Import Selected</button>
+          <button id="cancelImportBtn" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
