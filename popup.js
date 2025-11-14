@@ -130,7 +130,13 @@ function renderProfiles() {
     return;
   }
 
-  profilesContainer.innerHTML = currentProfiles.map(profile => `
+  // Sort profiles: active (enabled) profiles first, then inactive ones
+  const sortedProfiles = [...currentProfiles].sort((a, b) => {
+    if (a.enabled === b.enabled) return 0;
+    return a.enabled ? -1 : 1;
+  });
+
+  profilesContainer.innerHTML = sortedProfiles.map(profile => `
     <div class="profile-card ${!profile.enabled ? 'disabled' : ''}" data-id="${profile.id}">
       <div class="profile-header">
         <div class="profile-info">
