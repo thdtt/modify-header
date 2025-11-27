@@ -5,7 +5,6 @@ let currentProfiles = [];
 let editingProfileId = null;
 
 // DOM Elements
-const createProfileBtn = document.getElementById("createProfileBtn");
 const exportProfilesBtn = document.getElementById("exportProfilesBtn");
 const importProfilesBtn = document.getElementById("importProfilesBtn");
 const importFileInput = document.getElementById("importFileInput");
@@ -47,7 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Setup event listeners
 function setupEventListeners() {
-	createProfileBtn.addEventListener("click", showCreateForm);
+	// Bottom new profile button
+	const createProfileBtnBottom = document.getElementById("createProfileBtnBottom");
+	if (createProfileBtnBottom) {
+		createProfileBtnBottom.addEventListener("click", showCreateForm);
+	}
+
 	exportProfilesBtn.addEventListener("click", showExportModal);
 	importProfilesBtn.addEventListener("click", () => importFileInput.click());
 	importFileInput.addEventListener("change", handleImportFile);
@@ -140,6 +144,8 @@ async function loadProfiles() {
 
 // Render profiles list
 function renderProfiles() {
+	const bottomBtn = document.getElementById("createProfileBtnBottom");
+
 	if (currentProfiles.length === 0) {
 		profilesContainer.innerHTML = `
       <div class="empty-state">
@@ -148,6 +154,9 @@ function renderProfiles() {
     `;
 		return;
 	}
+
+	// Show bottom button when there are profiles
+	if (bottomBtn) bottomBtn.classList.remove("hidden");
 
 	// Sort profiles: active (enabled) profiles first, then inactive ones
 	const sortedProfiles = [...currentProfiles].sort((a, b) => {
@@ -1515,12 +1524,14 @@ function beautifyJSON() {
 	const input = document.getElementById("jsonInput").value.trim();
 	const formattedOutput = document.getElementById("formattedJsonOutput");
 	const treeOutput = document.getElementById("treeJsonOutput");
+	const copyBtn = document.getElementById("copyFormattedJsonBtn");
 
 	if (!input) {
 		formattedOutput.innerHTML =
 			'<div class="json-error">Please enter JSON to beautify</div>';
 		treeOutput.innerHTML =
 			'<div class="json-error">Please enter JSON to beautify</div>';
+		if (copyBtn) copyBtn.classList.add("hidden");
 		return;
 	}
 
@@ -1530,6 +1541,9 @@ function beautifyJSON() {
 
 		// Update formatted view
 		formattedOutput.textContent = formatted;
+
+		// Show copy button
+		if (copyBtn) copyBtn.classList.remove("hidden");
 
 		// Update tree view
 		treeOutput.innerHTML = createTreeNode(null, parsed);
@@ -1543,6 +1557,7 @@ function beautifyJSON() {
 		)}</div>`;
 		formattedOutput.innerHTML = errorMsg;
 		treeOutput.innerHTML = errorMsg;
+		if (copyBtn) copyBtn.classList.add("hidden");
 	}
 }
 
@@ -1644,12 +1659,15 @@ function clearJSON() {
 	document.getElementById("jsonInput").value = "";
 	document.getElementById("formattedJsonOutput").textContent = "";
 	document.getElementById("treeJsonOutput").innerHTML = "";
+	const copyBtn = document.getElementById("copyFormattedJsonBtn");
+	if (copyBtn) copyBtn.classList.add("hidden");
 }
 
 // Initialize JSON Playground event listeners
 function initializeJsonPlayground() {
 	const beautifyBtn = document.getElementById("beautifyJsonBtn");
 	const clearBtn = document.getElementById("clearJsonBtn");
+	const copyFormattedBtn = document.getElementById("copyFormattedJsonBtn");
 
 	if (beautifyBtn) {
 		beautifyBtn.addEventListener("click", beautifyJSON);
@@ -1659,10 +1677,162 @@ function initializeJsonPlayground() {
 		clearBtn.addEventListener("click", clearJSON);
 	}
 
+	// Copy formatted JSON button
+	if (copyFormattedBtn) {
+		copyFormattedBtn.addEventListener("click", () => {
+			const formattedOutput = document.getElementById(
+				"formattedJsonOutput"
+			);
+			const text = formattedOutput.textContent;
+
+			if (text) {
+				navigator.clipboard
+					.writeText(text)
+					.then(() => {
+						copyFormattedBtn.textContent = "Copied!";
+						copyFormattedBtn.classList.add("copied");
+
+						setTimeout(() => {
+							copyFormattedBtn.textContent = "Copy";
+							copyFormattedBtn.classList.remove("copied");
+						}, 1500);
+					})
+					.catch((err) => {
+						console.error("Failed to copy:", err);
+						copyFormattedBtn.textContent = "Failed";
+						setTimeout(() => {
+							copyFormattedBtn.textContent = "Copy";
+						}, 1500);
+					});
+			}
+		});
+	}
+
 	// Tab switching - just switch views, data is already rendered
 	document.querySelectorAll(".json-view-tab").forEach((tab) => {
 		tab.addEventListener("click", () => {
 			switchJsonView(tab.dataset.view);
 		});
 	});
+
+	// Setup collapsible sections
+	setupCollapsibleSections();
+
+	// Setup Base64 playground
+	setupBase64Playground();
+}
+
+// Setup collapsible sections
+function setupCollapsibleSections() {
+	document.querySelectorAll(".utils-section-header").forEach((header) => {
+		header.addEventListener("click", () => {
+			const content = header.nextElementSibling;
+			const isCollapsed = content.classList.contains("collapsed");
+
+			if (isCollapsed) {
+				// Expand
+				content.classList.remove("collapsed");
+				header.classList.add("expanded");
+			} else {
+				// Collapse
+				content.classList.add("collapsed");
+				header.classList.remove("expanded");
+			}
+		});
+	});
+}
+
+// Base64 encode/decode functions
+function encodeBase64() {
+	const input = document.getElementById("base64Input").value;
+	const output = document.getElementById("base64Output");
+	const copyBtn = document.getElementById("copyBase64OutputBtn");
+
+	if (!input) {
+		output.value = "";
+		if (copyBtn) copyBtn.classList.add("hidden");
+		return;
+	}
+
+	try {
+		const encoded = btoa(unescape(encodeURIComponent(input)));
+		output.value = encoded;
+		if (copyBtn) copyBtn.classList.remove("hidden");
+	} catch (error) {
+		output.value = `Error: ${error.message}`;
+		if (copyBtn) copyBtn.classList.add("hidden");
+	}
+}
+
+function decodeBase64() {
+	const input = document.getElementById("base64Input").value.trim();
+	const output = document.getElementById("base64Output");
+	const copyBtn = document.getElementById("copyBase64OutputBtn");
+
+	if (!input) {
+		output.value = "";
+		if (copyBtn) copyBtn.classList.add("hidden");
+		return;
+	}
+
+	try {
+		const decoded = decodeURIComponent(escape(atob(input)));
+		output.value = decoded;
+		if (copyBtn) copyBtn.classList.remove("hidden");
+	} catch (error) {
+		output.value = `Error: Invalid Base64 string - ${error.message}`;
+		if (copyBtn) copyBtn.classList.add("hidden");
+	}
+}
+
+function clearBase64() {
+	document.getElementById("base64Input").value = "";
+	document.getElementById("base64Output").value = "";
+	const copyBtn = document.getElementById("copyBase64OutputBtn");
+	if (copyBtn) copyBtn.classList.add("hidden");
+}
+
+function setupBase64Playground() {
+	const encodeBtn = document.getElementById("encodeBase64Btn");
+	const decodeBtn = document.getElementById("decodeBase64Btn");
+	const clearBtn = document.getElementById("clearBase64Btn");
+	const copyBtn = document.getElementById("copyBase64OutputBtn");
+
+	if (encodeBtn) {
+		encodeBtn.addEventListener("click", encodeBase64);
+	}
+
+	if (decodeBtn) {
+		decodeBtn.addEventListener("click", decodeBase64);
+	}
+
+	if (clearBtn) {
+		clearBtn.addEventListener("click", clearBase64);
+	}
+
+	// Copy Base64 output button
+	if (copyBtn) {
+		copyBtn.addEventListener("click", () => {
+			const output = document.getElementById("base64Output");
+			const text = output.value;
+
+			if (text) {
+				navigator.clipboard.writeText(text).then(() => {
+					copyBtn.textContent = "Copied!";
+					copyBtn.classList.add("copied");
+
+					setTimeout(() => {
+						copyBtn.textContent = "Copy";
+						copyBtn.classList.remove("copied");
+					}, 1500);
+				}).catch((err) => {
+					console.error("Failed to copy:", err);
+					copyBtn.textContent = "Failed";
+					setTimeout(() => {
+						copyBtn.textContent = "Copy";
+					}, 1500);
+				});
+			}
+		});
+	}
 }

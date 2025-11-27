@@ -143,6 +143,30 @@ body {
 	gap: 2px;
 }
 
+.btn-new-profile-bottom {
+	width: 100%;
+	margin-top: 16px;
+	padding: 12px;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	border: none;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: transform 0.2s, box-shadow 0.2s;
+	box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-new-profile-bottom:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-new-profile-bottom:active {
+	transform: translateY(0);
+}
+
 .btn-danger {
 	background: #f44336;
 	color: white;
@@ -905,22 +929,32 @@ body {
 	padding: 20px;
 }
 
-/* Scrollbar */
+/* Scrollbar - Hidden but functional */
 ::-webkit-scrollbar {
-	width: 8px;
+	width: 0px;
+	height: 0px;
 }
 
 ::-webkit-scrollbar-track {
-	background: #f1f1f1;
+	background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #888;
-	border-radius: 4px;
+	background: transparent;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #555;
+	background: transparent;
+}
+
+/* Hide scrollbar for Firefox */
+* {
+	scrollbar-width: none;
+}
+
+/* Hide scrollbar for IE/Edge */
+* {
+	-ms-overflow-style: none;
 }
 
 .section-title {
@@ -929,10 +963,9 @@ body {
 
 /* JSON Playground */
 .json-playground {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
+	display: flex;
+	flex-direction: column;
 	gap: 16px;
-	margin-top: 16px;
 }
 
 .json-input-area,
@@ -950,7 +983,7 @@ body {
 
 .json-input {
 	width: 100%;
-	min-height: 400px;
+	min-height: 150px;
 	padding: 12px;
 	border: 1px solid #ddd;
 	border-radius: 4px;
@@ -997,16 +1030,50 @@ body {
 
 .json-view {
 	display: none;
-	min-height: 400px;
+	min-height: 150px;
 	max-height: 600px;
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	background: #f9f9f9;
 	overflow: auto;
+	position: relative;
 }
 
 .json-view.active {
 	display: block;
+}
+
+.json-copy-btn {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	padding: 6px 16px;
+	background: #667eea;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.2s, background 0.2s;
+	z-index: 10;
+}
+
+.json-view:hover .json-copy-btn {
+	opacity: 1;
+}
+
+.json-copy-btn:hover {
+	background: #5568d3;
+}
+
+.json-copy-btn:active {
+	transform: scale(0.95);
+}
+
+.json-copy-btn.copied {
+	background: #4caf50;
 }
 
 .json-output {
@@ -1096,4 +1163,134 @@ body {
 	border-radius: 4px;
 	border: 1px solid #ffc0cb;
 	margin: 12px 0;
+}
+
+/* Utils Section Collapsible */
+.utils-section {
+	margin: 12px 0;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	overflow: hidden;
+	background: white;
+}
+
+.utils-section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 16px 20px;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	cursor: pointer;
+	user-select: none;
+	transition: background 0.2s;
+}
+
+.utils-section-header:hover {
+	background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+}
+
+.utils-section-title {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.utils-section-arrow {
+	font-size: 14px;
+	transition: transform 0.3s;
+	font-weight: bold;
+}
+
+.utils-section-header.expanded .utils-section-arrow {
+	transform: rotate(180deg);
+}
+
+.utils-section-content {
+	padding: 12px;
+}
+
+.utils-section-content.collapsed {
+	display: none;
+}
+
+/* Base64 Playground */
+.base64-playground {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.base64-input-area,
+.base64-output-area {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.base64-controls {
+	display: flex;
+	gap: 8px;
+	flex-wrap: nowrap;
+}
+
+.base64-input,
+.base64-output {
+	width: 100%;
+	min-height: 150px;
+	padding: 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-family: "Monaco", "Menlo", "Courier New", monospace;
+	font-size: 12px;
+	line-height: 1.5;
+	resize: vertical;
+	background: #f9f9f9;
+}
+
+.base64-input:focus {
+	outline: none;
+	border-color: #667eea;
+	background: white;
+}
+
+.base64-output {
+	background: white;
+	border: 1px solid #ddd;
+}
+
+.base64-output-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	position: relative;
+}
+
+.base64-output-header h3 {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: #333;
+}
+
+.base64-output-area {
+	position: relative;
+}
+
+.base64-output-wrapper {
+	position: relative;
+}
+
+.base64-output-wrapper .json-copy-btn {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+}
+
+.base64-output-wrapper:hover .json-copy-btn:not(.hidden) {
+	opacity: 1;
+}
+
+.json-copy-btn.hidden {
+	display: none;
 }

@@ -20,7 +20,6 @@
         <button id="importProfilesBtn" class="btn btn-primary btn-icon" title="Import profiles">
           <span>📥 Import</span>
         </button>
-        <button id="createProfileBtn" class="btn btn-primary">New Profile</button>
       </div>
       <input type="file" id="importFileInput" accept=".json" style="display: none;">
     </div>
@@ -72,6 +71,7 @@
             <p>No profiles yet. Create one to get started!</p>
           </div>
         </div>
+        <button id="createProfileBtnBottom" class="btn-new-profile-bottom hidden">+ New Profile</button>
       </div>
     </div>
 
@@ -135,30 +135,70 @@
 
     <!-- Utils Section -->
     <div id="utilsSection" class="section hidden">
-      <h2 class="section-title">JSON Playground</h2>
 
-      <div class="json-playground">
-        <div class="json-input-area">
-          <div class="json-controls">
-            <button id="beautifyJsonBtn" class="btn btn-primary">Beautify JSON</button>
-            <button id="clearJsonBtn" class="btn btn-secondary">Clear</button>
-          </div>
-          <textarea id="jsonInput" class="json-input" placeholder="Paste your JSON here..."></textarea>
+      <!-- JSON Playground -->
+      <div class="utils-section">
+        <div class="utils-section-header" data-section="json">
+          <h2 class="utils-section-title">JSON Playground</h2>
+          <span class="utils-section-arrow">▼</span>
         </div>
+        <div class="utils-section-content collapsed" id="jsonPlaygroundContent">
+          <div class="json-playground">
+            <div class="json-input-area">
+              <div class="json-controls">
+                <button id="beautifyJsonBtn" class="btn btn-primary">Beautify JSON</button>
+                <button id="clearJsonBtn" class="btn btn-secondary">Clear</button>
+              </div>
+              <textarea id="jsonInput" class="json-input" placeholder="Paste your JSON here..."></textarea>
+            </div>
 
-        <div class="json-output-area">
-          <div class="json-view-tabs">
-            <button class="json-view-tab active" data-view="formatted">Formatted JSON</button>
-            <button class="json-view-tab" data-view="tree">Tree View</button>
-          </div>
-          <div id="formattedJsonView" class="json-view active">
-            <pre id="formattedJsonOutput" class="json-output"></pre>
-          </div>
-          <div id="treeJsonView" class="json-view hidden">
-            <div id="treeJsonOutput" class="json-tree"></div>
+            <div class="json-output-area">
+              <div class="json-view-tabs">
+                <button class="json-view-tab active" data-view="formatted">Formatted JSON</button>
+                <button class="json-view-tab" data-view="tree">Tree View</button>
+              </div>
+              <div id="formattedJsonView" class="json-view active">
+                <button id="copyFormattedJsonBtn" class="json-copy-btn hidden">Copy</button>
+                <pre id="formattedJsonOutput" class="json-output"></pre>
+              </div>
+              <div id="treeJsonView" class="json-view hidden">
+                <div id="treeJsonOutput" class="json-tree"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Base64 Playground -->
+      <div class="utils-section">
+        <div class="utils-section-header" data-section="base64">
+          <h2 class="utils-section-title">Base64 Playground</h2>
+          <span class="utils-section-arrow">▼</span>
+        </div>
+        <div class="utils-section-content collapsed" id="base64PlaygroundContent">
+          <div class="base64-playground">
+            <div class="base64-input-area">
+              <div class="base64-controls">
+                <button id="encodeBase64Btn" class="btn btn-primary">Encode</button>
+                <button id="decodeBase64Btn" class="btn btn-primary">Decode</button>
+                <button id="clearBase64Btn" class="btn btn-secondary">Clear</button>
+              </div>
+              <textarea id="base64Input" class="base64-input" placeholder="Enter text to encode or Base64 string to decode..."></textarea>
+            </div>
+
+            <div class="base64-output-area">
+              <div class="base64-output-header">
+                <h3>Output</h3>
+              </div>
+              <div class="base64-output-wrapper">
+                <button id="copyBase64OutputBtn" class="json-copy-btn hidden">Copy</button>
+                <textarea id="base64Output" class="base64-output" placeholder="Result will appear here..." readonly></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Hidden file inputs for storage import -->
