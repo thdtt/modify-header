@@ -11,15 +11,20 @@ body {
 	font-size: 14px;
 	color: #333;
 	background: #f5f5f5;
-	width: 500px;
-	max-height: 600px;
+	min-width: 500px;
+	max-width: 1200px;
+	width: 100%;
+	max-height: 800px;
 	overflow-y: auto;
+	resize: both;
 }
 
 .container {
 	background: white;
 	padding: 0;
 	min-height: 600px;
+	width: 100%;
+	height: 100%;
 }
 
 /* Header */
@@ -797,10 +802,44 @@ body {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
+	position: relative;
 }
 
 .storage-preview-item:last-child {
 	margin-bottom: 0;
+}
+
+.storage-copy-btn {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	padding: 4px 12px;
+	background: #667eea;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	font-size: 11px;
+	font-weight: 600;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.2s, background 0.2s;
+	z-index: 10;
+}
+
+.storage-preview-item:hover .storage-copy-btn {
+	opacity: 1;
+}
+
+.storage-copy-btn:hover {
+	background: #5568d3;
+}
+
+.storage-copy-btn:active {
+	transform: scale(0.95);
+}
+
+.storage-copy-btn.copied {
+	background: #4caf50;
 }
 
 .storage-preview-key {
@@ -882,4 +921,179 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
 	background: #555;
+}
+
+.section-title {
+	margin: 12px;
+}
+
+/* JSON Playground */
+.json-playground {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	margin-top: 16px;
+}
+
+.json-input-area,
+.json-output-area {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.json-controls {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.json-input {
+	width: 100%;
+	min-height: 400px;
+	padding: 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-family: "Monaco", "Menlo", "Courier New", monospace;
+	font-size: 12px;
+	line-height: 1.5;
+	resize: vertical;
+	background: #f9f9f9;
+}
+
+.json-input:focus {
+	outline: none;
+	border-color: #667eea;
+	background: white;
+}
+
+.json-view-tabs {
+	display: flex;
+	gap: 4px;
+	border-bottom: 2px solid #e0e0e0;
+}
+
+.json-view-tab {
+	padding: 8px 16px;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 500;
+	color: #666;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -2px;
+	transition: all 0.2s;
+}
+
+.json-view-tab:hover {
+	color: #667eea;
+}
+
+.json-view-tab.active {
+	color: #667eea;
+	border-bottom-color: #667eea;
+}
+
+.json-view {
+	display: none;
+	min-height: 400px;
+	max-height: 600px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	background: #f9f9f9;
+	overflow: auto;
+}
+
+.json-view.active {
+	display: block;
+}
+
+.json-output {
+	margin: 0;
+	padding: 12px;
+	font-family: "Monaco", "Menlo", "Courier New", monospace;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #333;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	background: white;
+	border-radius: 4px;
+}
+
+.json-tree {
+	padding: 12px;
+	font-family: "Monaco", "Menlo", "Courier New", monospace;
+	font-size: 12px;
+	line-height: 1.5;
+	width: max-content;
+	min-width: 150%;
+	background: white;
+}
+
+.json-tree-node {
+	margin-left: 20px;
+	margin-top: 4px;
+	display: block;
+	width: max-content;
+}
+
+.json-tree-key {
+	color: #0066cc;
+	font-weight: 600;
+	display: inline;
+}
+
+.json-tree-value {
+	color: #333;
+	display: inline;
+	white-space: nowrap;
+}
+
+.json-tree-value.string {
+	color: #22863a;
+}
+
+.json-tree-value.number {
+	color: #005cc5;
+}
+
+.json-tree-value.boolean {
+	color: #d73a49;
+}
+
+.json-tree-value.null {
+	color: #6f42c1;
+}
+
+.json-tree-toggle {
+	cursor: pointer;
+	user-select: none;
+	color: #666;
+	font-weight: bold;
+	margin-right: 4px;
+	display: inline-block;
+	width: 12px;
+}
+
+.json-tree-toggle:hover {
+	color: #667eea;
+}
+
+.json-tree-children {
+	margin-left: 16px;
+}
+
+.json-tree-children.collapsed {
+	display: none;
+}
+
+.json-error {
+	color: #d73a49;
+	background: #fff5f5;
+	padding: 12px;
+	border-radius: 4px;
+	border: 1px solid #ffc0cb;
+	margin: 12px 0;
 }

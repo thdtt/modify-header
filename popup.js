@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	setupEventListeners();
 	setupNavigationListeners();
 	setupStorageListeners();
+	initializeJsonPlayground();
 });
 
 // Setup event listeners
@@ -815,6 +816,10 @@ function switchSection(sectionName) {
 		document.getElementById("manageStorageSection").classList.add("active");
 		document.getElementById("headerTitle").textContent = "Manage Storage";
 		document.getElementById("headerActions").style.display = "none";
+	} else if (sectionName === "utils") {
+		document.getElementById("utilsSection").classList.add("active");
+		document.getElementById("headerTitle").textContent = "Utils";
+		document.getElementById("headerActions").style.display = "none";
 	}
 }
 
@@ -877,7 +882,11 @@ function createStorageItemHTML(key, value, index) {
 	const shouldCollapse = valueLength > 200; // Collapse if value is longer than 200 characters
 
 	return `
-		<div class="storage-preview-item">
+		<div class="storage-preview-item" data-value="${escapeHtml(value).replace(
+			/"/g,
+			"&quot;"
+		)}">
+			<button class="storage-copy-btn" title="Copy value">Copy</button>
 			<div class="storage-preview-key">${escapedKey}</div>
 			<div class="storage-preview-value ${
 				shouldCollapse ? "collapsed" : ""
@@ -894,8 +903,9 @@ function setupStorageExpandListeners(contentId, expandBtnId, collapseBtnId) {
 	const expandBtn = document.getElementById(expandBtnId);
 	const collapseBtn = document.getElementById(collapseBtnId);
 
-	// Event delegation for individual toggle buttons
+	// Event delegation for individual toggle buttons and copy buttons
 	contentDiv.addEventListener("click", (e) => {
+		// Handle toggle buttons
 		if (e.target.classList.contains("storage-value-toggle")) {
 			const index = e.target.dataset.index;
 			const valueDiv = contentDiv.querySelector(
@@ -909,6 +919,34 @@ function setupStorageExpandListeners(contentId, expandBtnId, collapseBtnId) {
 				valueDiv.classList.add("collapsed");
 				e.target.textContent = "See more";
 			}
+		}
+
+		// Handle copy buttons
+		if (e.target.classList.contains("storage-copy-btn")) {
+			const item = e.target.closest(".storage-preview-item");
+			const value = item.dataset.value;
+
+			// Copy to clipboard
+			navigator.clipboard
+				.writeText(value)
+				.then(() => {
+					// Show feedback
+					const originalText = e.target.textContent;
+					e.target.textContent = "Copied!";
+					e.target.classList.add("copied");
+
+					setTimeout(() => {
+						e.target.textContent = originalText;
+						e.target.classList.remove("copied");
+					}, 1500);
+				})
+				.catch((err) => {
+					console.error("Failed to copy:", err);
+					e.target.textContent = "Failed";
+					setTimeout(() => {
+						e.target.textContent = "Copy";
+					}, 1500);
+				});
 		}
 	});
 
@@ -1467,4 +1505,164 @@ Expires: ${
 		)}</div>`;
 		previewDiv.classList.remove("hidden");
 	}
+}
+
+// =========================
+// JSON Playground Functions
+// =========================
+
+function beautifyJSON() {
+	const input = document.getElementById("jsonInput").value.trim();
+	const formattedOutput = document.getElementById("formattedJsonOutput");
+	const treeOutput = document.getElementById("treeJsonOutput");
+
+	if (!input) {
+		formattedOutput.innerHTML =
+			'<div class="json-error">Please enter JSON to beautify</div>';
+		treeOutput.innerHTML =
+			'<div class="json-error">Please enter JSON to beautify</div>';
+		return;
+	}
+
+	try {
+		const parsed = JSON.parse(input);
+		const formatted = JSON.stringify(parsed, null, 2);
+
+		// Update formatted view
+		formattedOutput.textContent = formatted;
+
+		// Update tree view
+		treeOutput.innerHTML = createTreeNode(null, parsed);
+		setupTreeToggleListeners();
+
+		// Switch to formatted view by default
+		switchJsonView("formatted");
+	} catch (error) {
+		const errorMsg = `<div class="json-error">Invalid JSON: ${escapeHtml(
+			error.message
+		)}</div>`;
+		formattedOutput.innerHTML = errorMsg;
+		treeOutput.innerHTML = errorMsg;
+	}
+}
+
+function createTreeNode(key, value, level = 0) {
+	const type = value === null ? "null" : typeof value;
+	const isExpandable = type === "object" && value !== null;
+	const isArray = Array.isArray(value);
+
+	let html = '<div class="json-tree-node">';
+
+	// Add toggle for expandable nodes
+	if (isExpandable) {
+		html += '<span class="json-tree-toggle">▼</span>';
+	} else {
+		html +=
+			'<span class="json-tree-toggle" style="visibility: hidden;">▼</span>';
+	}
+
+	// Add key
+	if (key !== null) {
+		html += `<span class="json-tree-key">${escapeHtml(key)}</span>: `;
+	}
+
+	// Add value or container indicator
+	if (isExpandable) {
+		const entries = isArray ? value.length : Object.keys(value).length;
+		const containerType = isArray ? "Array" : "Object";
+		html += `<span class="json-tree-value">${containerType}(${entries})</span>`;
+
+		// Add children
+		html += '<div class="json-tree-children">';
+		if (isArray) {
+			value.forEach((item, index) => {
+				html += createTreeNode(`[${index}]`, item, level + 1);
+			});
+		} else {
+			Object.keys(value).forEach((childKey) => {
+				html += createTreeNode(childKey, value[childKey], level + 1);
+			});
+		}
+		html += "</div>";
+	} else {
+		// Primitive value
+		let displayValue = value;
+		if (type === "string") {
+			displayValue = `"${escapeHtml(value)}"`;
+		}
+		html += `<span class="json-tree-value ${type}">${displayValue}</span>`;
+	}
+
+	html += "</div>";
+	return html;
+}
+
+function setupTreeToggleListeners() {
+	const treeOutput = document.getElementById("treeJsonOutput");
+
+	treeOutput.addEventListener("click", (e) => {
+		if (e.target.classList.contains("json-tree-toggle")) {
+			const node = e.target.parentElement;
+			const children = node.querySelector(".json-tree-children");
+
+			if (children) {
+				children.classList.toggle("collapsed");
+				e.target.textContent = children.classList.contains("collapsed")
+					? "▶"
+					: "▼";
+			}
+		}
+	});
+}
+
+function switchJsonView(view) {
+	// Update tabs
+	document.querySelectorAll(".json-view-tab").forEach((tab) => {
+		if (tab.dataset.view === view) {
+			tab.classList.add("active");
+		} else {
+			tab.classList.remove("active");
+		}
+	});
+
+	// Update views
+	document.querySelectorAll(".json-view").forEach((viewDiv) => {
+		if (
+			viewDiv.id ===
+			`${view === "formatted" ? "formattedJson" : "treeJson"}View`
+		) {
+			viewDiv.classList.add("active");
+			viewDiv.classList.remove("hidden");
+		} else {
+			viewDiv.classList.remove("active");
+			viewDiv.classList.add("hidden");
+		}
+	});
+}
+
+function clearJSON() {
+	document.getElementById("jsonInput").value = "";
+	document.getElementById("formattedJsonOutput").textContent = "";
+	document.getElementById("treeJsonOutput").innerHTML = "";
+}
+
+// Initialize JSON Playground event listeners
+function initializeJsonPlayground() {
+	const beautifyBtn = document.getElementById("beautifyJsonBtn");
+	const clearBtn = document.getElementById("clearJsonBtn");
+
+	if (beautifyBtn) {
+		beautifyBtn.addEventListener("click", beautifyJSON);
+	}
+
+	if (clearBtn) {
+		clearBtn.addEventListener("click", clearJSON);
+	}
+
+	// Tab switching - just switch views, data is already rendered
+	document.querySelectorAll(".json-view-tab").forEach((tab) => {
+		tab.addEventListener("click", () => {
+			switchJsonView(tab.dataset.view);
+		});
+	});
 }

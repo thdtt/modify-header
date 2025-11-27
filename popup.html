@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Modify Headers</title>
   <link rel="stylesheet" href="popup.css">
 </head>
+
 <body>
   <div class="container">
     <!-- Header -->
@@ -27,38 +29,39 @@
     <nav class="nav-menu">
       <button class="nav-item active" data-section="modify-headers">Modify Headers</button>
       <button class="nav-item" data-section="manage-storage">Manage Storage</button>
+      <button class="nav-item" data-section="utils">Utils</button>
     </nav>
 
     <!-- Modify Headers Section -->
     <div id="modifyHeadersSection" class="section active">
       <!-- Profile Form (hidden by default) -->
       <div id="profileForm" class="profile-form hidden">
-      <h2 id="formTitle">New Profile</h2>
+        <h2 id="formTitle">New Profile</h2>
 
-      <div class="form-group">
-        <label for="profileName">Profile Name:</label>
-        <input type="text" id="profileName" placeholder="e.g., My API Headers" required>
-      </div>
-
-      <div class="form-group">
-        <label for="urlPattern">URL Pattern:</label>
-        <input type="text" id="urlPattern" placeholder="e.g., example.com or https://api.example.com/*" required>
-        <small>Examples: "example.com", "*.example.com", "https://api.example.com/*"</small>
-      </div>
-
-      <div class="form-group">
-        <label>Headers:</label>
-        <div id="headersContainer">
-          <!-- Headers will be dynamically added here -->
+        <div class="form-group">
+          <label for="profileName">Profile Name:</label>
+          <input type="text" id="profileName" placeholder="e.g., My API Headers" required>
         </div>
-        <button id="addHeaderBtn" class="btn btn-secondary">+ Add Header</button>
-      </div>
 
-      <div class="form-actions">
-        <button id="saveProfileBtn" class="btn btn-primary">Save</button>
-        <button id="cancelProfileBtn" class="btn btn-secondary">Cancel</button>
+        <div class="form-group">
+          <label for="urlPattern">URL Pattern:</label>
+          <input type="text" id="urlPattern" placeholder="e.g., example.com or https://api.example.com/*" required>
+          <small>Examples: "example.com", "*.example.com", "https://api.example.com/*"</small>
+        </div>
+
+        <div class="form-group">
+          <label>Headers:</label>
+          <div id="headersContainer">
+            <!-- Headers will be dynamically added here -->
+          </div>
+          <button id="addHeaderBtn" class="btn btn-secondary">+ Add Header</button>
+        </div>
+
+        <div class="form-actions">
+          <button id="saveProfileBtn" class="btn btn-primary">Save</button>
+          <button id="cancelProfileBtn" class="btn btn-secondary">Cancel</button>
+        </div>
       </div>
-    </div>
 
       <!-- Profiles List -->
       <div id="profilesList" class="profiles-list">
@@ -130,6 +133,34 @@
       </div>
     </div>
 
+    <!-- Utils Section -->
+    <div id="utilsSection" class="section hidden">
+      <h2 class="section-title">JSON Playground</h2>
+
+      <div class="json-playground">
+        <div class="json-input-area">
+          <div class="json-controls">
+            <button id="beautifyJsonBtn" class="btn btn-primary">Beautify JSON</button>
+            <button id="clearJsonBtn" class="btn btn-secondary">Clear</button>
+          </div>
+          <textarea id="jsonInput" class="json-input" placeholder="Paste your JSON here..."></textarea>
+        </div>
+
+        <div class="json-output-area">
+          <div class="json-view-tabs">
+            <button class="json-view-tab active" data-view="formatted">Formatted JSON</button>
+            <button class="json-view-tab" data-view="tree">Tree View</button>
+          </div>
+          <div id="formattedJsonView" class="json-view active">
+            <pre id="formattedJsonOutput" class="json-output"></pre>
+          </div>
+          <div id="treeJsonView" class="json-view hidden">
+            <div id="treeJsonOutput" class="json-tree"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Hidden file inputs for storage import -->
     <input type="file" id="importLocalStorageFile" accept=".json" style="display: none;">
     <input type="file" id="importSessionStorageFile" accept=".json" style="display: none;">
@@ -188,4 +219,5 @@
 
   <script src="popup.js"></script>
 </body>
+
 </html>
