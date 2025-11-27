@@ -40,6 +40,8 @@ let pendingImportData = null;
 document.addEventListener("DOMContentLoaded", () => {
 	loadProfiles();
 	setupEventListeners();
+	setupNavigationListeners();
+	setupStorageListeners();
 });
 
 // Setup event listeners
@@ -773,4 +775,696 @@ function showError(message) {
 	// Simple error display - could be enhanced with a toast notification
 	console.error(message);
 	alert(message);
+}
+
+// Setup navigation listeners
+function setupNavigationListeners() {
+	const navItems = document.querySelectorAll(".nav-item");
+	navItems.forEach((item) => {
+		item.addEventListener("click", () => {
+			const section = item.dataset.section;
+			switchSection(section);
+		});
+	});
+}
+
+// Switch between sections
+function switchSection(sectionName) {
+	// Remove active class from all nav items and sections
+	document.querySelectorAll(".nav-item").forEach((item) => {
+		item.classList.remove("active");
+	});
+	document.querySelectorAll(".section").forEach((section) => {
+		section.classList.remove("active");
+	});
+
+	// Add active class to selected nav item and section
+	const activeNavItem = document.querySelector(
+		`.nav-item[data-section="${sectionName}"]`
+	);
+	if (activeNavItem) {
+		activeNavItem.classList.add("active");
+	}
+
+	// Show appropriate section and update header
+	if (sectionName === "modify-headers") {
+		document.getElementById("modifyHeadersSection").classList.add("active");
+		document.getElementById("headerTitle").textContent = "Modify Headers";
+		document.getElementById("headerActions").style.display = "flex";
+	} else if (sectionName === "manage-storage") {
+		document.getElementById("manageStorageSection").classList.add("active");
+		document.getElementById("headerTitle").textContent = "Manage Storage";
+		document.getElementById("headerActions").style.display = "none";
+	}
+}
+
+// Setup storage management listeners
+function setupStorageListeners() {
+	// Local Storage
+	document
+		.getElementById("exportLocalStorageBtn")
+		.addEventListener("click", exportLocalStorage);
+	document
+		.getElementById("importLocalStorageBtn")
+		.addEventListener("click", () => {
+			document.getElementById("importLocalStorageFile").click();
+		});
+	document
+		.getElementById("importLocalStorageFile")
+		.addEventListener("change", importLocalStorage);
+	document
+		.getElementById("previewLocalStorageBtn")
+		.addEventListener("click", previewLocalStorage);
+
+	// Session Storage
+	document
+		.getElementById("exportSessionStorageBtn")
+		.addEventListener("click", exportSessionStorage);
+	document
+		.getElementById("importSessionStorageBtn")
+		.addEventListener("click", () => {
+			document.getElementById("importSessionStorageFile").click();
+		});
+	document
+		.getElementById("importSessionStorageFile")
+		.addEventListener("change", importSessionStorage);
+	document
+		.getElementById("previewSessionStorageBtn")
+		.addEventListener("click", previewSessionStorage);
+
+	// Cookies
+	document
+		.getElementById("exportCookiesBtn")
+		.addEventListener("click", exportCookies);
+	document
+		.getElementById("importCookiesBtn")
+		.addEventListener("click", () => {
+			document.getElementById("importCookiesFile").click();
+		});
+	document
+		.getElementById("importCookiesFile")
+		.addEventListener("change", importCookies);
+	document
+		.getElementById("previewCookiesBtn")
+		.addEventListener("click", previewCookies);
+}
+
+// Helper function to create storage item with expandable value
+function createStorageItemHTML(key, value, index) {
+	const escapedKey = escapeHtml(key);
+	const escapedValue = escapeHtml(value);
+	const valueLength = escapedValue.length;
+	const shouldCollapse = valueLength > 200; // Collapse if value is longer than 200 characters
+
+	return `
+		<div class="storage-preview-item">
+			<div class="storage-preview-key">${escapedKey}</div>
+			<div class="storage-preview-value ${
+				shouldCollapse ? "collapsed" : ""
+			}" data-index="${index}">${escapedValue}</div>${
+		shouldCollapse
+			? `<div class="storage-value-toggle" data-index="${index}">See more</div>`
+			: ""
+	}</div>`;
+}
+
+// Setup expand/collapse listeners for storage preview
+function setupStorageExpandListeners(contentId, expandBtnId, collapseBtnId) {
+	const contentDiv = document.getElementById(contentId);
+	const expandBtn = document.getElementById(expandBtnId);
+	const collapseBtn = document.getElementById(collapseBtnId);
+
+	// Event delegation for individual toggle buttons
+	contentDiv.addEventListener("click", (e) => {
+		if (e.target.classList.contains("storage-value-toggle")) {
+			const index = e.target.dataset.index;
+			const valueDiv = contentDiv.querySelector(
+				`.storage-preview-value[data-index="${index}"]`
+			);
+
+			if (valueDiv.classList.contains("collapsed")) {
+				valueDiv.classList.remove("collapsed");
+				e.target.textContent = "See less";
+			} else {
+				valueDiv.classList.add("collapsed");
+				e.target.textContent = "See more";
+			}
+		}
+	});
+
+	// Expand all button
+	expandBtn.addEventListener("click", () => {
+		contentDiv
+			.querySelectorAll(".storage-preview-value.collapsed")
+			.forEach((valueDiv) => {
+				valueDiv.classList.remove("collapsed");
+			});
+		contentDiv
+			.querySelectorAll(".storage-value-toggle")
+			.forEach((toggle) => {
+				toggle.textContent = "See less";
+			});
+	});
+
+	// Collapse all button
+	collapseBtn.addEventListener("click", () => {
+		contentDiv
+			.querySelectorAll(".storage-preview-value[data-index]")
+			.forEach((valueDiv) => {
+				const toggle = contentDiv.querySelector(
+					`.storage-value-toggle[data-index="${valueDiv.dataset.index}"]`
+				);
+				if (toggle) {
+					valueDiv.classList.add("collapsed");
+					toggle.textContent = "See more";
+				}
+			});
+	});
+}
+
+// Export Local Storage
+async function exportLocalStorage() {
+	try {
+		const tabs = await chrome.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+		const tabId = tabs[0]?.id;
+
+		if (!tabId) {
+			throw new Error("Could not get current tab");
+		}
+
+		// Inject script to get localStorage from the page
+		const results = await chrome.scripting.executeScript({
+			target: { tabId: tabId },
+			func: () => {
+				const data = {};
+				for (let i = 0; i < localStorage.length; i++) {
+					const key = localStorage.key(i);
+					data[key] = localStorage.getItem(key);
+				}
+				return data;
+			},
+		});
+
+		const data = results[0].result;
+
+		const exportData = {
+			type: "localStorage",
+			exportDate: new Date().toISOString(),
+			data: data,
+		};
+
+		downloadJSON(exportData, `localStorage-${Date.now()}.json`);
+		alert("Local Storage exported successfully!");
+	} catch (error) {
+		console.error("Error exporting local storage:", error);
+		alert(`Failed to export Local Storage: ${error.message}`);
+	}
+}
+
+// Import Local Storage
+async function importLocalStorage(event) {
+	const file = event.target.files[0];
+	if (!file) return;
+
+	try {
+		const text = await file.text();
+		const importData = JSON.parse(text);
+
+		if (importData.type !== "localStorage") {
+			throw new Error("Invalid file type. Expected localStorage export.");
+		}
+
+		if (
+			!confirm(
+				"This will overwrite existing Local Storage data. Continue?"
+			)
+		) {
+			return;
+		}
+
+		const tabs = await chrome.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+		const tabId = tabs[0]?.id;
+
+		if (!tabId) {
+			throw new Error("Could not get current tab");
+		}
+
+		// Inject script to set localStorage in the page
+		await chrome.scripting.executeScript({
+			target: { tabId: tabId },
+			func: (data) => {
+				Object.keys(data).forEach((key) => {
+					localStorage.setItem(key, data[key]);
+				});
+			},
+			args: [importData.data],
+		});
+
+		alert("Local Storage imported successfully!");
+		loadProfiles(); // Reload profiles if they were affected
+	} catch (error) {
+		console.error("Error importing local storage:", error);
+		alert(`Failed to import Local Storage: ${error.message}`);
+	} finally {
+		event.target.value = "";
+	}
+}
+
+// Export Session Storage
+async function exportSessionStorage() {
+	try {
+		const tabs = await chrome.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+		const tabId = tabs[0]?.id;
+
+		if (!tabId) {
+			throw new Error("Could not get current tab");
+		}
+
+		// Inject script to get sessionStorage from the page
+		const results = await chrome.scripting.executeScript({
+			target: { tabId: tabId },
+			func: () => {
+				const data = {};
+				for (let i = 0; i < sessionStorage.length; i++) {
+					const key = sessionStorage.key(i);
+					data[key] = sessionStorage.getItem(key);
+				}
+				return data;
+			},
+		});
+
+		const data = results[0].result;
+
+		const exportData = {
+			type: "sessionStorage",
+			exportDate: new Date().toISOString(),
+			data: data,
+		};
+
+		downloadJSON(exportData, `sessionStorage-${Date.now()}.json`);
+		alert("Session Storage exported successfully!");
+	} catch (error) {
+		console.error("Error exporting session storage:", error);
+		alert(`Failed to export Session Storage: ${error.message}`);
+	}
+}
+
+// Import Session Storage
+async function importSessionStorage(event) {
+	const file = event.target.files[0];
+	if (!file) return;
+
+	try {
+		const text = await file.text();
+		const importData = JSON.parse(text);
+
+		if (importData.type !== "sessionStorage") {
+			throw new Error(
+				"Invalid file type. Expected sessionStorage export."
+			);
+		}
+
+		if (
+			!confirm(
+				"This will overwrite existing Session Storage data. Continue?"
+			)
+		) {
+			return;
+		}
+
+		const tabs = await chrome.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+		const tabId = tabs[0]?.id;
+
+		if (!tabId) {
+			throw new Error("Could not get current tab");
+		}
+
+		// Inject script to set sessionStorage in the page
+		await chrome.scripting.executeScript({
+			target: { tabId: tabId },
+			func: (data) => {
+				Object.keys(data).forEach((key) => {
+					sessionStorage.setItem(key, data[key]);
+				});
+			},
+			args: [importData.data],
+		});
+
+		alert("Session Storage imported successfully!");
+	} catch (error) {
+		console.error("Error importing session storage:", error);
+		alert(`Failed to import Session Storage: ${error.message}`);
+	} finally {
+		event.target.value = "";
+	}
+}
+
+// Export Cookies
+async function exportCookies() {
+	try {
+		const tabs = await chrome.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+		const url = tabs[0]?.url;
+
+		if (!url) {
+			throw new Error("Could not get current tab URL");
+		}
+
+		const cookies = await chrome.cookies.getAll({ url: url });
+
+		const exportData = {
+			type: "cookies",
+			exportDate: new Date().toISOString(),
+			url: url,
+			cookies: cookies,
+		};
+
+		downloadJSON(exportData, `cookies-${Date.now()}.json`);
+		alert(`Exported ${cookies.length} cookie(s) successfully!`);
+	} catch (error) {
+		console.error("Error exporting cookies:", error);
+		alert("Failed to export Cookies.");
+	}
+}
+
+// Import Cookies
+async function importCookies(event) {
+	const file = event.target.files[0];
+	if (!file) return;
+
+	try {
+		const text = await file.text();
+		const importData = JSON.parse(text);
+
+		if (importData.type !== "cookies") {
+			throw new Error("Invalid file type. Expected cookies export.");
+		}
+
+		if (!confirm(`Import ${importData.cookies.length} cookie(s)?`)) {
+			return;
+		}
+
+		let successCount = 0;
+		for (const cookie of importData.cookies) {
+			try {
+				await chrome.cookies.set({
+					url: importData.url,
+					name: cookie.name,
+					value: cookie.value,
+					domain: cookie.domain,
+					path: cookie.path,
+					secure: cookie.secure,
+					httpOnly: cookie.httpOnly,
+					sameSite: cookie.sameSite,
+					expirationDate: cookie.expirationDate,
+				});
+				successCount++;
+			} catch (err) {
+				console.warn(`Failed to set cookie ${cookie.name}:`, err);
+			}
+		}
+
+		alert(`Successfully imported ${successCount} cookie(s)!`);
+	} catch (error) {
+		console.error("Error importing cookies:", error);
+		alert(`Failed to import Cookies: ${error.message}`);
+	} finally {
+		event.target.value = "";
+	}
+}
+
+// Helper function to download JSON
+function downloadJSON(data, filename) {
+	const jsonString = JSON.stringify(data, null, 2);
+	const blob = new Blob([jsonString], { type: "application/json" });
+	const url = URL.createObjectURL(blob);
+	const link = document.createElement("a");
+	link.href = url;
+	link.download = filename;
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+	URL.revokeObjectURL(url);
+}
+
+// Preview Local Storage
+async function previewLocalStorage() {
+	const previewDiv = document.getElementById("localStoragePreview");
+	const contentDiv = document.getElementById("localStorageContent");
+
+	// Toggle visibility
+	if (!previewDiv.classList.contains("hidden")) {
+		previewDiv.classList.add("hidden");
+		return;
+	}
+
+	try {
+		const tabs = await chrome.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+		const tab = tabs[0];
+
+		if (!tab || !tab.id) {
+			throw new Error("Could not get current tab");
+		}
+
+		// Check if the current page allows script injection
+		if (
+			tab.url.startsWith("chrome://") ||
+			tab.url.startsWith("chrome-extension://") ||
+			tab.url.startsWith("edge://") ||
+			tab.url.startsWith("about:") ||
+			tab.url === "chrome://newtab/" ||
+			!tab.url
+		) {
+			throw new Error(
+				"Cannot access storage on this page. Please navigate to a regular website (http:// or https://)."
+			);
+		}
+
+		// Inject script to get localStorage from the page
+		const results = await chrome.scripting.executeScript({
+			target: { tabId: tab.id },
+			func: () => {
+				const data = {};
+				for (let i = 0; i < localStorage.length; i++) {
+					const key = localStorage.key(i);
+					data[key] = localStorage.getItem(key);
+				}
+				return data;
+			},
+		});
+
+		const localStorageData = results[0].result;
+		const keys = Object.keys(localStorageData);
+
+		if (keys.length === 0) {
+			contentDiv.innerHTML =
+				'<div class="storage-preview-empty">No data in Local Storage</div>';
+		} else {
+			let html = "";
+			keys.forEach((key, index) => {
+				html += createStorageItemHTML(
+					key,
+					localStorageData[key],
+					index
+				);
+			});
+			contentDiv.innerHTML = html;
+
+			// Setup expand/collapse listeners
+			setupStorageExpandListeners(
+				"localStorageContent",
+				"expandAllLocalStorageBtn",
+				"collapseAllLocalStorageBtn"
+			);
+		}
+		previewDiv.classList.remove("hidden");
+	} catch (error) {
+		console.error("Error previewing local storage:", error);
+		contentDiv.innerHTML = `<div class="storage-preview-empty" style="color: #f44336;">Error: ${escapeHtml(
+			error.message
+		)}</div>`;
+		previewDiv.classList.remove("hidden");
+	}
+}
+
+// Preview Session Storage
+async function previewSessionStorage() {
+	const previewDiv = document.getElementById("sessionStoragePreview");
+	const contentDiv = document.getElementById("sessionStorageContent");
+
+	// Toggle visibility
+	if (!previewDiv.classList.contains("hidden")) {
+		previewDiv.classList.add("hidden");
+		return;
+	}
+
+	try {
+		const tabs = await chrome.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+		const tab = tabs[0];
+
+		if (!tab || !tab.id) {
+			throw new Error("Could not get current tab");
+		}
+
+		// Check if the current page allows script injection
+		if (
+			tab.url.startsWith("chrome://") ||
+			tab.url.startsWith("chrome-extension://") ||
+			tab.url.startsWith("edge://") ||
+			tab.url.startsWith("about:") ||
+			tab.url === "chrome://newtab/" ||
+			!tab.url
+		) {
+			throw new Error(
+				"Cannot access storage on this page. Please navigate to a regular website (http:// or https://)."
+			);
+		}
+
+		// Inject script to get sessionStorage from the page
+		const results = await chrome.scripting.executeScript({
+			target: { tabId: tab.id },
+			func: () => {
+				const data = {};
+				for (let i = 0; i < sessionStorage.length; i++) {
+					const key = sessionStorage.key(i);
+					data[key] = sessionStorage.getItem(key);
+				}
+				return data;
+			},
+		});
+
+		const sessionStorageData = results[0].result;
+		const keys = Object.keys(sessionStorageData);
+
+		if (keys.length === 0) {
+			contentDiv.innerHTML =
+				'<div class="storage-preview-empty">No data in Session Storage</div>';
+		} else {
+			let html = "";
+			keys.forEach((key, index) => {
+				html += createStorageItemHTML(
+					key,
+					sessionStorageData[key],
+					index
+				);
+			});
+			contentDiv.innerHTML = html;
+
+			// Setup expand/collapse listeners
+			setupStorageExpandListeners(
+				"sessionStorageContent",
+				"expandAllSessionStorageBtn",
+				"collapseAllSessionStorageBtn"
+			);
+		}
+		previewDiv.classList.remove("hidden");
+	} catch (error) {
+		console.error("Error previewing session storage:", error);
+		contentDiv.innerHTML = `<div class="storage-preview-empty" style="color: #f44336;">Error: ${escapeHtml(
+			error.message
+		)}</div>`;
+		previewDiv.classList.remove("hidden");
+	}
+}
+
+// Preview Cookies
+async function previewCookies() {
+	const previewDiv = document.getElementById("cookiesPreview");
+	const contentDiv = document.getElementById("cookiesContent");
+
+	// Toggle visibility
+	if (!previewDiv.classList.contains("hidden")) {
+		previewDiv.classList.add("hidden");
+		return;
+	}
+
+	try {
+		const tabs = await chrome.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+		const tab = tabs[0];
+
+		if (!tab || !tab.url) {
+			throw new Error("Could not get current tab URL");
+		}
+
+		// Check if the current page allows cookie access
+		if (
+			tab.url.startsWith("chrome://") ||
+			tab.url.startsWith("chrome-extension://") ||
+			tab.url.startsWith("edge://") ||
+			tab.url.startsWith("about:") ||
+			tab.url === "chrome://newtab/" ||
+			!tab.url.startsWith("http")
+		) {
+			throw new Error(
+				"Cannot access cookies on this page. Please navigate to a regular website (http:// or https://)."
+			);
+		}
+
+		const cookies = await chrome.cookies.getAll({ url: tab.url });
+
+		if (cookies.length === 0) {
+			contentDiv.innerHTML =
+				'<div class="storage-preview-empty">No cookies for current site</div>';
+		} else {
+			let html = "";
+			cookies.forEach((cookie, index) => {
+				const cookieInfo = `
+Name: ${cookie.name}
+Value: ${cookie.value}
+Domain: ${cookie.domain}
+Path: ${cookie.path}
+Secure: ${cookie.secure}
+HttpOnly: ${cookie.httpOnly}
+SameSite: ${cookie.sameSite || "none"}
+Expires: ${
+					cookie.expirationDate
+						? new Date(
+								cookie.expirationDate * 1000
+						  ).toLocaleString()
+						: "Session"
+				}
+				`.trim();
+
+				html += createStorageItemHTML(cookie.name, cookieInfo, index);
+			});
+			contentDiv.innerHTML = html;
+
+			// Setup expand/collapse listeners
+			setupStorageExpandListeners(
+				"cookiesContent",
+				"expandAllCookiesBtn",
+				"collapseAllCookiesBtn"
+			);
+		}
+		previewDiv.classList.remove("hidden");
+	} catch (error) {
+		console.error("Error previewing cookies:", error);
+		contentDiv.innerHTML = `<div class="storage-preview-empty" style="color: #f44336;">Error: ${escapeHtml(
+			error.message
+		)}</div>`;
+		previewDiv.classList.remove("hidden");
+	}
 }

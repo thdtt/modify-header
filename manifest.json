@@ -7,7 +7,11 @@
   "permissions": [
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess",
-    "storage"
+    "storage",
+    "cookies",
+    "scripting",
+    "tabs",
+    "activeTab"
   ],
   "host_permissions": [
     "<all_urls>"

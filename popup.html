@@ -10,8 +10,8 @@
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <h1>Modify Headers</h1>
-      <div class="header-actions">
+      <h1 id="headerTitle">Modify Headers</h1>
+      <div class="header-actions" id="headerActions">
         <button id="exportProfilesBtn" class="btn btn-primary btn-icon" title="Export all profiles">
           <span>📤 Export</span>
         </button>
@@ -23,8 +23,16 @@
       <input type="file" id="importFileInput" accept=".json" style="display: none;">
     </div>
 
-    <!-- Profile Form (hidden by default) -->
-    <div id="profileForm" class="profile-form hidden">
+    <!-- Navigation Menu -->
+    <nav class="nav-menu">
+      <button class="nav-item active" data-section="modify-headers">Modify Headers</button>
+      <button class="nav-item" data-section="manage-storage">Manage Storage</button>
+    </nav>
+
+    <!-- Modify Headers Section -->
+    <div id="modifyHeadersSection" class="section active">
+      <!-- Profile Form (hidden by default) -->
+      <div id="profileForm" class="profile-form hidden">
       <h2 id="formTitle">New Profile</h2>
 
       <div class="form-group">
@@ -52,16 +60,80 @@
       </div>
     </div>
 
-    <!-- Profiles List -->
-    <div id="profilesList" class="profiles-list">
-      <h2>Profiles</h2>
-      <div id="profilesContainer">
-        <!-- Profiles will be dynamically added here -->
-        <div class="empty-state">
-          <p>No profiles yet. Create one to get started!</p>
+      <!-- Profiles List -->
+      <div id="profilesList" class="profiles-list">
+        <h2>Profiles</h2>
+        <div id="profilesContainer">
+          <!-- Profiles will be dynamically added here -->
+          <div class="empty-state">
+            <p>No profiles yet. Create one to get started!</p>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Manage Storage Section -->
+    <div id="manageStorageSection" class="section hidden">
+      <div class="storage-container">
+        <h2>Manage Browser Storage</h2>
+
+        <!-- Local Storage -->
+        <div class="storage-section">
+          <h3>Local Storage</h3>
+          <div class="storage-actions">
+            <button id="exportLocalStorageBtn" class="btn btn-primary">Export Local Storage</button>
+            <button id="importLocalStorageBtn" class="btn btn-primary">Import Local Storage</button>
+            <button id="previewLocalStorageBtn" class="btn btn-secondary">Preview</button>
+          </div>
+          <div id="localStoragePreview" class="storage-preview hidden">
+            <div class="storage-preview-controls">
+              <button id="expandAllLocalStorageBtn" class="btn btn-secondary btn-small">Expand All</button>
+              <button id="collapseAllLocalStorageBtn" class="btn btn-secondary btn-small">Collapse All</button>
+            </div>
+            <div id="localStorageContent"></div>
+          </div>
+        </div>
+
+        <!-- Session Storage -->
+        <div class="storage-section">
+          <h3>Session Storage</h3>
+          <div class="storage-actions">
+            <button id="exportSessionStorageBtn" class="btn btn-primary">Export Session Storage</button>
+            <button id="importSessionStorageBtn" class="btn btn-primary">Import Session Storage</button>
+            <button id="previewSessionStorageBtn" class="btn btn-secondary">Preview</button>
+          </div>
+          <div id="sessionStoragePreview" class="storage-preview hidden">
+            <div class="storage-preview-controls">
+              <button id="expandAllSessionStorageBtn" class="btn btn-secondary btn-small">Expand All</button>
+              <button id="collapseAllSessionStorageBtn" class="btn btn-secondary btn-small">Collapse All</button>
+            </div>
+            <div id="sessionStorageContent"></div>
+          </div>
+        </div>
+
+        <!-- Cookies -->
+        <div class="storage-section">
+          <h3>Cookies</h3>
+          <div class="storage-actions">
+            <button id="exportCookiesBtn" class="btn btn-primary">Export Cookies</button>
+            <button id="importCookiesBtn" class="btn btn-primary">Import Cookies</button>
+            <button id="previewCookiesBtn" class="btn btn-secondary">Preview</button>
+          </div>
+          <div id="cookiesPreview" class="storage-preview hidden">
+            <div class="storage-preview-controls">
+              <button id="expandAllCookiesBtn" class="btn btn-secondary btn-small">Expand All</button>
+              <button id="collapseAllCookiesBtn" class="btn btn-secondary btn-small">Collapse All</button>
+            </div>
+            <div id="cookiesContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden file inputs for storage import -->
+    <input type="file" id="importLocalStorageFile" accept=".json" style="display: none;">
+    <input type="file" id="importSessionStorageFile" accept=".json" style="display: none;">
+    <input type="file" id="importCookiesFile" accept=".json" style="display: none;">
 
     <!-- Export Modal -->
     <div id="exportModal" class="modal hidden">
