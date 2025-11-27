@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	setupNavigationListeners();
 	setupStorageListeners();
 	initializeJsonPlayground();
+	restorePlaygroundStates();
 });
 
 // Setup event listeners
@@ -1526,12 +1527,16 @@ function beautifyJSON() {
 	const treeOutput = document.getElementById("treeJsonOutput");
 	const copyBtn = document.getElementById("copyFormattedJsonBtn");
 
+	// Save input state
+	localStorage.setItem("jsonPlaygroundInput", input);
+
 	if (!input) {
 		formattedOutput.innerHTML =
 			'<div class="json-error">Please enter JSON to beautify</div>';
 		treeOutput.innerHTML =
 			'<div class="json-error">Please enter JSON to beautify</div>';
 		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("jsonPlaygroundOutput");
 		return;
 	}
 
@@ -1549,6 +1554,9 @@ function beautifyJSON() {
 		treeOutput.innerHTML = createTreeNode(null, parsed);
 		setupTreeToggleListeners();
 
+		// Save output state
+		localStorage.setItem("jsonPlaygroundOutput", formatted);
+
 		// Switch to formatted view by default
 		switchJsonView("formatted");
 	} catch (error) {
@@ -1558,6 +1566,7 @@ function beautifyJSON() {
 		formattedOutput.innerHTML = errorMsg;
 		treeOutput.innerHTML = errorMsg;
 		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("jsonPlaygroundOutput");
 	}
 }
 
@@ -1661,6 +1670,10 @@ function clearJSON() {
 	document.getElementById("treeJsonOutput").innerHTML = "";
 	const copyBtn = document.getElementById("copyFormattedJsonBtn");
 	if (copyBtn) copyBtn.classList.add("hidden");
+
+	// Clear saved state
+	localStorage.removeItem("jsonPlaygroundInput");
+	localStorage.removeItem("jsonPlaygroundOutput");
 }
 
 // Initialize JSON Playground event listeners
@@ -1751,9 +1764,13 @@ function encodeBase64() {
 	const output = document.getElementById("base64Output");
 	const copyBtn = document.getElementById("copyBase64OutputBtn");
 
+	// Save input state
+	localStorage.setItem("base64PlaygroundInput", input);
+
 	if (!input) {
 		output.value = "";
 		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("base64PlaygroundOutput");
 		return;
 	}
 
@@ -1761,9 +1778,13 @@ function encodeBase64() {
 		const encoded = btoa(unescape(encodeURIComponent(input)));
 		output.value = encoded;
 		if (copyBtn) copyBtn.classList.remove("hidden");
+
+		// Save output state
+		localStorage.setItem("base64PlaygroundOutput", encoded);
 	} catch (error) {
 		output.value = `Error: ${error.message}`;
 		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("base64PlaygroundOutput");
 	}
 }
 
@@ -1772,9 +1793,13 @@ function decodeBase64() {
 	const output = document.getElementById("base64Output");
 	const copyBtn = document.getElementById("copyBase64OutputBtn");
 
+	// Save input state
+	localStorage.setItem("base64PlaygroundInput", input);
+
 	if (!input) {
 		output.value = "";
 		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("base64PlaygroundOutput");
 		return;
 	}
 
@@ -1782,9 +1807,13 @@ function decodeBase64() {
 		const decoded = decodeURIComponent(escape(atob(input)));
 		output.value = decoded;
 		if (copyBtn) copyBtn.classList.remove("hidden");
+
+		// Save output state
+		localStorage.setItem("base64PlaygroundOutput", decoded);
 	} catch (error) {
 		output.value = `Error: Invalid Base64 string - ${error.message}`;
 		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("base64PlaygroundOutput");
 	}
 }
 
@@ -1793,6 +1822,10 @@ function clearBase64() {
 	document.getElementById("base64Output").value = "";
 	const copyBtn = document.getElementById("copyBase64OutputBtn");
 	if (copyBtn) copyBtn.classList.add("hidden");
+
+	// Clear saved state
+	localStorage.removeItem("base64PlaygroundInput");
+	localStorage.removeItem("base64PlaygroundOutput");
 }
 
 function setupBase64Playground() {
@@ -1846,11 +1879,18 @@ function setupBase64Playground() {
 
 function setupJwtPlayground() {
 	const jwtInput = document.getElementById("jwtInput");
+	const jwtSecret = document.getElementById("jwtSecret");
 	const clearBtn = document.getElementById("clearJwtBtn");
 	const verifyBtn = document.getElementById("verifyJwtBtn");
 
 	if (jwtInput) {
 		jwtInput.addEventListener("input", decodeJwt);
+	}
+
+	if (jwtSecret) {
+		jwtSecret.addEventListener("input", () => {
+			localStorage.setItem("jwtPlaygroundSecret", jwtSecret.value);
+		});
 	}
 
 	if (clearBtn) {
@@ -1906,6 +1946,9 @@ function decodeJwt() {
 		'.jwt-copy-btn[data-target="payload"]'
 	);
 
+	// Save input state
+	localStorage.setItem("jwtPlaygroundInput", input);
+
 	// Reset signature status
 	signatureStatus.classList.add("hidden");
 	signatureStatus.classList.remove("verified", "failed");
@@ -1916,6 +1959,8 @@ function decodeJwt() {
 		statusDiv.classList.add("hidden");
 		if (headerCopyBtn) headerCopyBtn.classList.add("hidden");
 		if (payloadCopyBtn) payloadCopyBtn.classList.add("hidden");
+		localStorage.removeItem("jwtPlaygroundHeader");
+		localStorage.removeItem("jwtPlaygroundPayload");
 		return;
 	}
 
@@ -1929,11 +1974,17 @@ function decodeJwt() {
 
 		// Decode header
 		const header = JSON.parse(base64UrlDecode(parts[0]));
-		headerOutput.textContent = JSON.stringify(header, null, 2);
+		const headerText = JSON.stringify(header, null, 2);
+		headerOutput.textContent = headerText;
 
 		// Decode payload
 		const payload = JSON.parse(base64UrlDecode(parts[1]));
-		payloadOutput.textContent = JSON.stringify(payload, null, 2);
+		const payloadText = JSON.stringify(payload, null, 2);
+		payloadOutput.textContent = payloadText;
+
+		// Save decoded outputs
+		localStorage.setItem("jwtPlaygroundHeader", headerText);
+		localStorage.setItem("jwtPlaygroundPayload", payloadText);
 
 		// Show valid status
 		statusDiv.textContent = "✓ Valid JWT Format";
@@ -1953,6 +2004,9 @@ function decodeJwt() {
 		// Hide copy buttons
 		if (headerCopyBtn) headerCopyBtn.classList.add("hidden");
 		if (payloadCopyBtn) payloadCopyBtn.classList.add("hidden");
+
+		localStorage.removeItem("jwtPlaygroundHeader");
+		localStorage.removeItem("jwtPlaygroundPayload");
 	}
 }
 
@@ -2074,4 +2128,78 @@ function clearJwt() {
 	document.querySelectorAll(".jwt-copy-btn").forEach((btn) => {
 		btn.classList.add("hidden");
 	});
+
+	// Clear saved state
+	localStorage.removeItem("jwtPlaygroundInput");
+	localStorage.removeItem("jwtPlaygroundHeader");
+	localStorage.removeItem("jwtPlaygroundPayload");
+	localStorage.removeItem("jwtPlaygroundSecret");
+}
+
+// =========================
+// Restore Playground States
+// =========================
+
+function restorePlaygroundStates() {
+	// Restore JSON Playground
+	const jsonInput = localStorage.getItem("jsonPlaygroundInput");
+	const jsonOutput = localStorage.getItem("jsonPlaygroundOutput");
+	if (jsonInput) {
+		document.getElementById("jsonInput").value = jsonInput;
+		if (jsonOutput) {
+			document.getElementById("formattedJsonOutput").textContent = jsonOutput;
+			const copyBtn = document.getElementById("copyFormattedJsonBtn");
+			if (copyBtn) copyBtn.classList.remove("hidden");
+
+			// Restore tree view
+			try {
+				const parsed = JSON.parse(jsonInput);
+				document.getElementById("treeJsonOutput").innerHTML = createTreeNode(null, parsed);
+				setupTreeToggleListeners();
+			} catch (e) {
+				// Ignore parsing errors on restore
+			}
+		}
+	}
+
+	// Restore Base64 Playground
+	const base64Input = localStorage.getItem("base64PlaygroundInput");
+	const base64Output = localStorage.getItem("base64PlaygroundOutput");
+	if (base64Input) {
+		document.getElementById("base64Input").value = base64Input;
+	}
+	if (base64Output) {
+		document.getElementById("base64Output").value = base64Output;
+		const copyBtn = document.getElementById("copyBase64OutputBtn");
+		if (copyBtn) copyBtn.classList.remove("hidden");
+	}
+
+	// Restore JWT Playground
+	const jwtInput = localStorage.getItem("jwtPlaygroundInput");
+	const jwtHeader = localStorage.getItem("jwtPlaygroundHeader");
+	const jwtPayload = localStorage.getItem("jwtPlaygroundPayload");
+	const jwtSecret = localStorage.getItem("jwtPlaygroundSecret");
+
+	if (jwtInput) {
+		document.getElementById("jwtInput").value = jwtInput;
+	}
+	if (jwtSecret) {
+		document.getElementById("jwtSecret").value = jwtSecret;
+	}
+	if (jwtHeader) {
+		document.getElementById("jwtHeader").textContent = jwtHeader;
+		const headerCopyBtn = document.querySelector('.jwt-copy-btn[data-target="header"]');
+		if (headerCopyBtn) headerCopyBtn.classList.remove("hidden");
+	}
+	if (jwtPayload) {
+		document.getElementById("jwtPayload").textContent = jwtPayload;
+		const payloadCopyBtn = document.querySelector('.jwt-copy-btn[data-target="payload"]');
+		if (payloadCopyBtn) payloadCopyBtn.classList.remove("hidden");
+	}
+	if (jwtInput && jwtHeader && jwtPayload) {
+		const statusDiv = document.getElementById("jwtValidationStatus");
+		statusDiv.textContent = "✓ Valid JWT Format";
+		statusDiv.className = "jwt-status valid";
+		statusDiv.classList.remove("hidden");
+	}
 }
