@@ -146,8 +146,11 @@
           <div class="json-playground">
             <div class="json-input-area">
               <div class="json-controls">
-                <button id="beautifyJsonBtn" class="btn btn-primary">Beautify JSON</button>
-                <button id="clearJsonBtn" class="btn btn-secondary">Clear</button>
+                <h3>Input JSON</h3>
+                <div>
+                  <button id="beautifyJsonBtn" class="btn btn-primary btn-small">Beautify</button>
+                  <button id="clearJsonBtn" class="btn btn-secondary btn-small">Clear</button>
+                </div>
               </div>
               <textarea id="jsonInput" class="json-input" placeholder="Paste your JSON here..."></textarea>
             </div>
@@ -179,9 +182,12 @@
           <div class="base64-playground">
             <div class="base64-input-area">
               <div class="base64-controls">
-                <button id="encodeBase64Btn" class="btn btn-primary">Encode</button>
-                <button id="decodeBase64Btn" class="btn btn-primary">Decode</button>
-                <button id="clearBase64Btn" class="btn btn-secondary">Clear</button>
+                <h3>Input Text</h3>
+                <div>
+                  <button id="encodeBase64Btn" class="btn btn-primary btn-small">Encode</button>
+                  <button id="decodeBase64Btn" class="btn btn-primary btn-small">Decode</button>
+                  <button id="clearBase64Btn" class="btn btn-secondary btn-small">Clear</button>
+                </div>
               </div>
               <textarea id="base64Input" class="base64-input" placeholder="Enter text to encode or Base64 string to decode..."></textarea>
             </div>
@@ -193,6 +199,54 @@
               <div class="base64-output-wrapper">
                 <button id="copyBase64OutputBtn" class="json-copy-btn hidden">Copy</button>
                 <textarea id="base64Output" class="base64-output" placeholder="Result will appear here..." readonly></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JWT Playground -->
+      <div class="utils-section">
+        <div class="utils-section-header" data-section="jwt">
+          <h2 class="utils-section-title">JWT Playground</h2>
+          <span class="utils-section-arrow">▼</span>
+        </div>
+        <div class="utils-section-content collapsed" id="jwtPlaygroundContent">
+          <div class="jwt-playground">
+            <div class="jwt-input-section">
+              <div class="jwt-input-header">
+                <h3>Encoded JWT</h3>
+                <button id="clearJwtBtn" class="btn btn-secondary btn-small">Clear</button>
+              </div>
+              <textarea id="jwtInput" class="jwt-input" placeholder="Paste your JWT token here..."></textarea>
+              <div id="jwtValidationStatus" class="jwt-status hidden"></div>
+            </div>
+
+            <div class="jwt-output-section">
+              <div class="jwt-decoded-section">
+                <div class="jwt-section-header jwt-header-color">
+                  <h3>Header</h3>
+                  <button class="jwt-copy-btn hidden" data-target="header">Copy</button>
+                </div>
+                <pre id="jwtHeader" class="jwt-output jwt-header-bg"></pre>
+              </div>
+
+              <div class="jwt-decoded-section">
+                <div class="jwt-section-header jwt-payload-color">
+                  <h3>Payload</h3>
+                  <button class="jwt-copy-btn hidden" data-target="payload">Copy</button>
+                </div>
+                <pre id="jwtPayload" class="jwt-output jwt-payload-bg"></pre>
+              </div>
+
+              <div class="jwt-signature-section">
+                <h3>Signature</h3>
+                <div class="jwt-signature-info">
+                  <p>Enter secret to verify signature (optional)</p>
+                  <input type="text" id="jwtSecret" class="jwt-secret-input" placeholder="your-256-bit-secret">
+                  <button id="verifyJwtBtn" class="btn btn-primary btn-small">Verify Signature</button>
+                </div>
+                <div id="jwtSignatureStatus" class="jwt-signature-status hidden"></div>
               </div>
             </div>
           </div>
