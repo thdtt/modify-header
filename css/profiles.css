@@ -1,0 +1,99 @@
+er-actions {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+/* Navigation Menu */
+.nav-menu {
+	display: flex;
+	background: #f5f5f5;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.nav-item {
+	flex: 1;
+	padding: 12px 20px;
+	background: transparent;
+	border: none;
+	border-bottom: 3px solid transparent;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 500;
+	color: #666;
+	transition: all 0.2s ease;
+	outline: none;
+}
+
+.nav-item:hover {
+	background: #eee;
+	color: #333;
+}
+
+.nav-item.active {
+	color: #016B61;
+	border-bottom-color: #016B61;
+	background: white;
+}
+
+/* Sections */
+.section {
+	display: none;
+}
+
+.section.active {
+	display: block;
+}
+
+/* Buttons */
+.btn {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 500;
+	transition: all 0.2s ease;
+	outline: none;
+}
+
+.btn:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+	transform: translateY(0);
+}
+
+.btn-primary {
+	background: white;
+	color: #016B61;
+}
+
+.btn-primary:hover {
+	background: #E5E9C5;
+	color: #016B61;
+}
+
+.btn-secondary {
+	background: #e0e0e0;
+	color: #333;
+}
+
+.btn-secondary:hover {
+	background: #d0d0d0;
+}
+
+.btn-icon {
+	padding: 6px 12px;
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.btn-icon span {
+	display: flex;
+	align-items: center;
+	gap: 2

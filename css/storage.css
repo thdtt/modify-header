@@ -1,0 +1,133 @@
+te;
+	padding: 6px 12px;
+	font-size: 12px;
+}
+
+.btn-clone:hover {
+	background: #7b1fa2;
+}
+
+.btn-small {
+	padding: 4px 8px;
+	font-size: 11px;
+}
+
+/* Profile Form */
+.profile-form {
+	padding: 20px;
+	background: #fafafa;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.profile-form.hidden {
+	display: none;
+}
+
+.profile-form h2 {
+	font-size: 18px;
+	margin-bottom: 16px;
+	color: #016B61;
+}
+
+.form-group {
+	margin-bottom: 16px;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 6px;
+	font-weight: 500;
+	color: #555;
+}
+
+.form-group input,
+.form-group select {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 13px;
+	transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+	outline: none;
+	border-color: #70B2B2;
+	box-shadow: 0 0 0 3px rgba(112, 178, 178, 0.15);
+}
+
+.form-group small {
+	display: block;
+	margin-top: 4px;
+	color: #888;
+	font-size: 11px;
+}
+
+/* Headers Container */
+#headersContainer {
+	margin-bottom: 12px;
+}
+
+.header-item {
+	background: white;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	padding: 12px;
+	margin-bottom: 8px;
+	position: relative;
+}
+
+.header-item-row {
+	display: grid;
+	grid-template-columns: 100px 1.5fr 1.5fr 40px;
+	gap: 8px;
+	align-items: center;
+}
+
+.header-item input,
+.header-item select {
+	padding: 6px 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 12px;
+}
+
+.remove-header-btn {
+	background: #f44336;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	width: 32px;
+	height: 32px;
+	cursor: pointer;
+	font-size: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.remove-header-btn:hover {
+	background: #d32f2f;
+}
+
+/* Form Actions */
+.form-actions {
+	display: flex;
+	gap: 8px;
+	margin-top: 16px;
+}
+
+.form-actions .btn {
+	flex: 1;
+}
+
+/* Profiles List */
+.profiles-list {
+	padding: 20px;
+}
+
+.profiles-list h2 {
+	font-size: 16px;
+	margin-bottom: 16px;
+	color: #5

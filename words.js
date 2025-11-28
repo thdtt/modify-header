@@ -1,6 +1,6 @@
 // Word lists for secret generator slug functionality
 
-const COMMON_WORDS = [
+window.COMMON_WORDS = [
 	'able', 'about', 'above', 'across', 'after', 'again', 'against', 'all', 'almost', 'alone',
 	'along', 'already', 'also', 'always', 'among', 'ancient', 'another', 'answer', 'any', 'appear',
 	'area', 'around', 'arrive', 'ask', 'away', 'back', 'base', 'basic', 'bear', 'beat',
@@ -85,7 +85,7 @@ const COMMON_WORDS = [
 	'you', 'young', 'your'
 ];
 
-const SHORT_WORDS = [
+window.SHORT_WORDS = [
 	'ace', 'act', 'add', 'age', 'ago', 'aid', 'aim', 'air', 'all', 'and',
 	'ant', 'any', 'ape', 'arc', 'are', 'ark', 'arm', 'art', 'ash', 'ask',
 	'ate', 'bad', 'bag', 'ban', 'bar', 'bat', 'bay', 'bed', 'bee', 'bet',
