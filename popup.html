@@ -189,7 +189,8 @@
                   <button id="clearBase64Btn" class="btn btn-secondary btn-small">Clear</button>
                 </div>
               </div>
-              <textarea id="base64Input" class="base64-input" placeholder="Enter text to encode or Base64 string to decode..."></textarea>
+              <textarea id="base64Input" class="base64-input"
+                placeholder="Enter text to encode or Base64 string to decode..."></textarea>
             </div>
 
             <div class="base64-output-area">
@@ -198,7 +199,106 @@
               </div>
               <div class="base64-output-wrapper">
                 <button id="copyBase64OutputBtn" class="json-copy-btn hidden">Copy</button>
-                <textarea id="base64Output" class="base64-output" placeholder="Result will appear here..." readonly></textarea>
+                <textarea id="base64Output" class="base64-output" placeholder="Result will appear here..."
+                  readonly></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Secret Generator -->
+      <div class="utils-section">
+        <div class="utils-section-header" data-section="secret">
+          <h2 class="utils-section-title">Secret Generator</h2>
+          <span class="utils-section-arrow">▼</span>
+        </div>
+        <div class="utils-section-content collapsed" id="secretGeneratorContent">
+          <div class="secret-generator">
+            <!-- Output -->
+            <div class="secret-output-section">
+              <div class="secret-output-header">
+                <h3>Generated Secret</h3>
+                <div class="secret-output-actions">
+                  <button id="regenerateSecretBtn" class="btn btn-primary btn-small">Generate</button>
+                  <button id="copySecretBtn" class="btn btn-secondary btn-small">Copy</button>
+                </div>
+              </div>
+              <div class="secret-output-wrapper">
+                <textarea id="secretOutput" class="secret-output" readonly
+                  placeholder="Click Generate to generate a secret..."></textarea>
+              </div>
+            </div>
+
+            <!-- Type Selection -->
+            <div class="secret-type-selection">
+              <label class="secret-type-option">
+                <input type="radio" name="secretType" value="random" checked>
+                <span>Random String</span>
+              </label>
+              <label class="secret-type-option">
+                <input type="radio" name="secretType" value="slug">
+                <span>Slug String</span>
+              </label>
+              <label class="secret-type-option">
+                <input type="radio" name="secretType" value="pin">
+                <span>PIN Code</span>
+              </label>
+            </div>
+
+            <!-- Random String Options -->
+            <div class="secret-options" id="randomOptions">
+              <div class="secret-slider-group">
+                <label>Length: <span id="randomLengthValue">32</span></label>
+                <input type="range" id="randomLength" min="8" max="128" value="32" class="secret-slider">
+              </div>
+              <div class="secret-checkboxes">
+                <label class="secret-checkbox">
+                  <input type="checkbox" id="includeUppercase" checked>
+                  <span>Uppercase (A-Z)</span>
+                </label>
+                <label class="secret-checkbox">
+                  <input type="checkbox" id="includeLowercase" checked>
+                  <span>Lowercase (a-z)</span>
+                </label>
+                <label class="secret-checkbox">
+                  <input type="checkbox" id="includeNumbers" checked>
+                  <span>Numbers (0-9)</span>
+                </label>
+                <label class="secret-checkbox">
+                  <input type="checkbox" id="includeSpecial" checked>
+                  <span>Special (!@#$%^&*)</span>
+                </label>
+                <label class="secret-checkbox">
+                  <input type="checkbox" id="includeSymbols">
+                  <span>Symbols (+=[]{}|;:,.<>?)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Slug String Options -->
+            <div class="secret-options hidden" id="slugOptions">
+              <div class="secret-slider-group">
+                <label>Number of Words: <span id="slugWordsValue">3</span></label>
+                <input type="range" id="slugWords" min="2" max="10" value="3" class="secret-slider">
+              </div>
+              <div class="secret-checkboxes">
+                <label class="secret-checkbox">
+                  <input type="checkbox" id="slugCapitalize" checked>
+                  <span>Capitalize First Character</span>
+                </label>
+                <label class="secret-checkbox">
+                  <input type="checkbox" id="slugFullWord">
+                  <span>Use Full Words</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- PIN Code Options -->
+            <div class="secret-options hidden" id="pinOptions">
+              <div class="secret-slider-group">
+                <label>PIN Length: <span id="pinLengthValue">6</span></label>
+                <input type="range" id="pinLength" min="4" max="12" value="6" class="secret-slider">
               </div>
             </div>
           </div>
@@ -311,6 +411,7 @@
     </div>
   </div>
 
+  <script src="words.js"></script>
   <script src="popup.js"></script>
 </body>
 
