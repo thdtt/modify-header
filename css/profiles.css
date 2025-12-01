@@ -12,7 +12,7 @@
 .profile-form h2 {
 	font-size: 18px;
 	margin-bottom: 16px;
-	color: #016B61;
+	color: #016b61;
 }
 
 .form-group {
@@ -39,7 +39,7 @@
 .form-group input:focus,
 .form-group select:focus {
 	outline: none;
-	border-color: #70B2B2;
+	border-color: #70b2b2;
 	box-shadow: 0 0 0 3px rgba(112, 178, 178, 0.15);
 }
 
@@ -313,18 +313,126 @@
 	gap: 8px;
 }
 
-.btn-icon {
+.profile-actions .btn {
 	padding: 6px 12px;
 	font-size: 12px;
-	display: flex;
-	align-items: center;
-	gap: 4px;
+}
+
+.btn-edit {
+	background-color: #0969da; /* Blue */
+	color: white;
+	border-color: rgba(27, 31, 36, 0.15);
+}
+
+.btn-edit:hover {
+	background-color: #0550ae;
+	border-color: rgba(27, 31, 36, 0.15);
+}
+
+.btn-edit:active {
+	background-color: #033d8b;
+}
+
+.btn-clone {
+	background-color: #f6f8fa; /* Gray */
+	color: #24292f;
+	border-color: #d0d7de;
+	box-shadow: 0 1px 0 rgba(27, 31, 36, 0.04);
+}
+
+.btn-clone:hover {
+	background-color: #f3f4f6;
+	border-color: #d0d7de;
+}
+
+.btn-clone:active {
+	background-color: #ebecf0;
+	border-color: #d0d7de;
 }
 
 .btn-icon span {
 	display: flex;
 	align-items: center;
 	gap: 2px;
+}
+
+/* Action Dropdown */
+.header-item-display {
+	position: relative; /* For dropdown positioning */
+}
+
+.action-dropdown {
+	position: absolute;
+	top: 36px; /* Position below the badge (12px padding + ~24px badge height) */
+	left: 12px;
+	background: white;
+	border: 1px solid rgba(27, 31, 36, 0.15);
+	border-radius: 6px;
+	box-shadow: 0 8px 24px rgba(140, 149, 159, 0.2);
+	z-index: 1000;
+	min-width: 140px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	padding: 4px 0;
+	animation: dropdownFadeIn 0.1s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.action-dropdown.hidden {
+	display: none;
+}
+
+.action-dropdown-item {
+	padding: 6px 16px;
+	font-size: 13px;
+	font-weight: 500;
+	color: #24292f;
+	cursor: pointer;
+	transition: none;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	line-height: 20px;
+}
+
+.action-dropdown-item:hover {
+	background-color: #0969da;
+	color: white;
+}
+
+/* Specific colors for items when NOT hovered */
+.action-dropdown-item:not(:hover).add {
+	color: #2ea44f;
+}
+
+.action-dropdown-item:not(:hover).modify {
+	color: #bf8700;
+}
+
+.action-dropdown-item:not(:hover).delete {
+	color: #cf222e;
+}
+
+/* Disable badge clicks on disabled profiles */
+.profile-card.disabled .header-action-badge {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.profile-card.disabled .header-action-badge:hover {
+	transform: none;
+	box-shadow: none;
 }
 
 /* Toggle Switch */
@@ -366,7 +474,7 @@
 }
 
 .toggle-switch input:checked + .toggle-slider {
-	background-color: #70B2B2;
+	background-color: #70b2b2;
 }
 
 .toggle-switch input:checked + .toggle-slider:before {
@@ -412,47 +520,4 @@
 	font-size: 10px;
 	color: #999;
 	font-style: italic;
-}
-
-/* Action Dropdown */
-.action-dropdown {
-	position: fixed;
-	background: white;
-	border: 1px solid #e0e0e0;
-	border-radius: 6px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-	z-index: 1000;
-	min-width: 120px;
-	overflow: hidden;
-}
-
-.action-dropdown-item {
-	padding: 10px 16px;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	font-size: 13px;
-	color: #333;
-	transition: background 0.2s;
-}
-
-.action-dropdown-item:hover {
-	background: #f5f5f5;
-}
-
-.action-dropdown-icon {
-	font-size: 16px;
-	line-height: 1;
-}
-
-/* Disable badge clicks on disabled profiles */
-.profile-card.disabled .header-action-badge {
-	cursor: not-allowed;
-	opacity: 0.5;
-}
-
-.profile-card.disabled .header-action-badge:hover {
-	transform: none;
-	box-shadow: none;
 }

@@ -1,5 +1,5 @@
 // Profile management module
-import { escapeHtml, generateId, showError } from '../utils/dom.js';
+import { escapeHtml, generateId, showError } from "../utils/dom.js";
 
 let currentProfiles = [];
 let editingProfileId = null;
@@ -21,7 +21,9 @@ export function init() {
 	profilesContainer = document.getElementById("profilesContainer");
 
 	// Setup event listeners
-	const createProfileBtnBottom = document.getElementById("createProfileBtnBottom");
+	const createProfileBtnBottom = document.getElementById(
+		"createProfileBtnBottom"
+	);
 	if (createProfileBtnBottom) {
 		createProfileBtnBottom.addEventListener("click", showCreateForm);
 	}
@@ -82,7 +84,9 @@ function renderProfiles() {
 
 function createProfileCard(profile) {
 	return `
-    <div class="profile-card ${!profile.enabled ? "disabled" : ""}" data-id="${profile.id}">
+    <div class="profile-card ${!profile.enabled ? "disabled" : ""}" data-id="${
+		profile.id
+	}">
       <div class="profile-header">
         <div class="profile-info">
           <div class="profile-name">${escapeHtml(profile.name)}</div>
@@ -96,16 +100,21 @@ function createProfileCard(profile) {
         </div>
       </div>
 
-      ${profile.headers && profile.headers.length > 0
-			? `
+      ${
+			profile.headers && profile.headers.length > 0
+				? `
         <div class="profile-details">
-          <div class="profile-headers-title">Headers (${profile.headers.length}):</div>
+          <div class="profile-headers-title">Headers (${
+				profile.headers.length
+			}):</div>
           <div class="profile-headers">
-            ${profile.headers.map(header => createHeaderDisplay(header)).join("")}
+            ${profile.headers
+				.map((header, index) => createHeaderDisplay(header, index))
+				.join("")}
           </div>
         </div>
       `
-			: ""
+				: ""
 		}
 
       <div class="profile-actions">
@@ -117,25 +126,35 @@ function createProfileCard(profile) {
   `;
 }
 
-function createHeaderDisplay(header) {
+function createHeaderDisplay(header, index) {
 	return `
     <div class="header-item-display ${header.action}">
-      <div class="header-action-badge ${header.action}">
-        ${escapeHtml(header.action.toUpperCase())}
+      <div class="header-action-badge ${header.action}" data-index="${index}">
+        ${escapeHtml(header.action.toUpperCase())} ▾
       </div>
+      
+      <div class="action-dropdown hidden" id="dropdown-${index}">
+        <div class="action-dropdown-item add" data-action="add" data-index="${index}">Add</div>
+        <div class="action-dropdown-item modify" data-action="modify" data-index="${index}">Modify</div>
+        <div class="action-dropdown-item delete" data-action="delete" data-index="${index}">Delete</div>
+      </div>
+
       <div class="header-content">
         <div class="header-name-display">
           <span class="header-label">Header:</span>
           <span class="header-name-value">${escapeHtml(header.name)}</span>
         </div>
-        ${header.action !== "delete"
-			? `
+        ${
+			header.action !== "delete"
+				? `
           <div class="header-value-display">
             <span class="header-label">Value:</span>
-            <span class="header-value-text">${escapeHtml(header.value || "")}</span>
+            <span class="header-value-text">${escapeHtml(
+				header.value || ""
+			)}</span>
           </div>
         `
-			: ""
+				: ""
 		}
       </div>
     </div>
@@ -192,11 +211,19 @@ function addHeaderField(header = null) {
     <div class="header-item-row">
       <select class="header-action">
         <option value="add" ${action === "add" ? "selected" : ""}>Add</option>
-        <option value="modify" ${action === "modify" ? "selected" : ""}>Modify</option>
-        <option value="delete" ${action === "delete" ? "selected" : ""}>Delete</option>
+        <option value="modify" ${
+			action === "modify" ? "selected" : ""
+		}>Modify</option>
+        <option value="delete" ${
+			action === "delete" ? "selected" : ""
+		}>Delete</option>
       </select>
-      <input type="text" class="header-name" placeholder="Header name" value="${escapeHtml(name)}" required>
-      <input type="text" class="header-value" placeholder="Value" value="${escapeHtml(value)}"
+      <input type="text" class="header-name" placeholder="Header name" value="${escapeHtml(
+			name
+		)}" required>
+      <input type="text" class="header-value" placeholder="Value" value="${escapeHtml(
+			value
+		)}"
              style="${action === "delete" ? "display: none;" : ""}">
       <button type="button" class="remove-header-btn">×</button>
     </div>
@@ -269,7 +296,9 @@ async function saveProfile() {
 
 	try {
 		if (editingProfileId) {
-			const index = currentProfiles.findIndex((p) => p.id === editingProfileId);
+			const index = currentProfiles.findIndex(
+				(p) => p.id === editingProfileId
+			);
 			if (index !== -1) {
 				currentProfiles[index] = {
 					...currentProfiles[index],
@@ -351,11 +380,62 @@ async function cloneProfile(profileId) {
 	}
 }
 
-function handleProfileAction(e) {
+async function handleProfileAction(e) {
 	const profileCard = e.target.closest(".profile-card");
 	if (!profileCard) return;
 
 	const profileId = profileCard.dataset.id;
+
+	// Handle Header Action Dropdown Toggle
+	if (e.target.classList.contains("header-action-badge")) {
+		// Prevent action if profile is disabled
+		if (profileCard.classList.contains("disabled")) return;
+
+		const index = e.target.dataset.index;
+		const dropdown = profileCard.querySelector(`#dropdown-${index}`);
+
+		// Close all other dropdowns first
+		document.querySelectorAll(".action-dropdown").forEach((d) => {
+			if (d !== dropdown) d.classList.add("hidden");
+		});
+
+		if (dropdown) {
+			dropdown.classList.toggle("hidden");
+		}
+		return;
+	}
+
+	// Handle Dropdown Item Selection
+	if (e.target.classList.contains("action-dropdown-item")) {
+		const index = parseInt(e.target.dataset.index, 10);
+		const newAction = e.target.dataset.action;
+		const profileIndex = currentProfiles.findIndex(
+			(p) => p.id === profileId
+		);
+
+		if (profileIndex !== -1 && !isNaN(index)) {
+			const profile = currentProfiles[profileIndex];
+
+			// Only update if action changed
+			if (profile.headers[index].action !== newAction) {
+				profile.headers[index].action = newAction;
+
+				try {
+					await chrome.storage.local.set({
+						profiles: currentProfiles,
+					});
+					loadProfiles();
+				} catch (error) {
+					console.error("Error updating profile action:", error);
+				}
+			} else {
+				// Just close dropdown if same action selected
+				const dropdown = e.target.closest(".action-dropdown");
+				if (dropdown) dropdown.classList.add("hidden");
+			}
+		}
+		return;
+	}
 
 	if (e.target.classList.contains("btn-edit")) {
 		editProfile(profileId);
@@ -365,6 +445,15 @@ function handleProfileAction(e) {
 		deleteProfile(profileId);
 	}
 }
+
+// Close dropdowns when clicking outside
+document.addEventListener("click", (e) => {
+	if (!e.target.closest(".header-item-display")) {
+		document
+			.querySelectorAll(".action-dropdown")
+			.forEach((d) => d.classList.add("hidden"));
+	}
+});
 
 function handleProfileToggle(e) {
 	if (e.target.type === "checkbox" && e.target.closest(".toggle-switch")) {
