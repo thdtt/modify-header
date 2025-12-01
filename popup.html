@@ -359,6 +359,41 @@
         </div>
       </div>
 
+      <!-- Auto Clicker -->
+      <div class="utils-section">
+        <div class="utils-section-header" data-section="autoClick">
+          <h2 class="utils-section-title">Auto Clicker</h2>
+          <span class="utils-section-arrow">▼</span>
+        </div>
+        <div class="utils-section-content collapsed" id="autoClickContent">
+          <div class="auto-click-playground">
+            <div class="auto-click-controls">
+              <div class="form-group">
+                <label>Coordinates:</label>
+                <div class="coordinate-inputs">
+                  <input type="number" id="clickX" placeholder="X" class="coord-input">
+                  <input type="number" id="clickY" placeholder="Y" class="coord-input">
+                  <button id="getCoordinateBtn" class="btn btn-secondary btn-small">Get Coordinate</button>
+                </div>
+                <small id="coordStatus" class="status-text hidden">Click anywhere on page...</small>
+              </div>
+
+              <div class="form-group">
+                <label for="clickInterval">Interval (ms):</label>
+                <input type="number" id="clickInterval" value="1000" min="100" step="100">
+              </div>
+
+              <div class="auto-click-actions">
+                <button id="startAutoClickBtn" class="btn btn-primary">Start</button>
+                <button id="stopAutoClickBtn" class="btn btn-danger hidden">Stop</button>
+              </div>
+
+              <div id="autoClickStatus" class="status-message hidden"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Hidden file inputs for storage import -->

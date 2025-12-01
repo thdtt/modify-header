@@ -7,6 +7,7 @@ import * as jsonPlayground from "./modules/jsonPlayground.js";
 import * as base64Playground from "./modules/base64Playground.js";
 import * as jwtPlayground from "./modules/jwtPlayground.js";
 import * as secretGenerator from "./modules/secretGenerator.js";
+import * as autoClick from "./modules/autoClick.js";
 
 // Initialize all modules
 document.addEventListener("DOMContentLoaded", () => {
@@ -22,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	base64Playground.init();
 	jwtPlayground.init();
 	secretGenerator.init();
+	autoClick.init();
 
 	// Restore playground states
 	restorePlaygroundStates();
@@ -32,4 +34,5 @@ function restorePlaygroundStates() {
 	base64Playground.restoreState();
 	jwtPlayground.restoreState();
 	secretGenerator.restoreState();
+	autoClick.restoreState();
 }
