@@ -29,7 +29,7 @@ body {
 
 /* Header */
 .header {
-	background: linear-gradient(135deg, #016B61 0%, #70B2B2 100%);
+	background: #016b61;
 	color: white;
 	padding: 20px;
 	display: flex;
@@ -76,8 +76,8 @@ body {
 }
 
 .nav-item.active {
-	color: #016B61;
-	border-bottom-color: #016B61;
+	color: #016b61;
+	border-bottom-color: #016b61;
 	background: white;
 }
 
@@ -113,12 +113,12 @@ body {
 
 .btn-primary {
 	background: white;
-	color: #016B61;
+	color: #016b61;
 }
 
 .btn-primary:hover {
-	background: #E5E9C5;
-	color: #016B61;
+	background: #e5e9c5;
+	color: #016b61;
 }
 
 .btn-secondary {
@@ -148,7 +148,7 @@ body {
 	width: 100%;
 	margin-top: 16px;
 	padding: 12px;
-	background: linear-gradient(135deg, #016B61 0%, #70B2B2 100%);
+	background: #016b61;
 	color: white;
 	border: none;
 	border-radius: 8px;

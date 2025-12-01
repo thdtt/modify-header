@@ -20,7 +20,9 @@ function switchSection(sectionName) {
 		section.classList.remove("active");
 	});
 
-	const activeNavItem = document.querySelector(`.nav-item[data-section="${sectionName}"]`);
+	const activeNavItem = document.querySelector(
+		`.nav-item[data-section="${sectionName}"]`
+	);
 	if (activeNavItem) {
 		activeNavItem.classList.add("active");
 	}
@@ -36,8 +38,55 @@ function switchSection(sectionName) {
 	} else if (sectionName === "utils") {
 		document.getElementById("utilsSection").classList.add("active");
 		document.getElementById("headerTitle").textContent = "Utils";
-		document.getElementById("headerActions").style.display = "none";
 	}
+
+	saveNavigationState(sectionName);
+}
+
+function saveNavigationState(sectionName) {
+	localStorage.setItem("activeSection", sectionName);
+}
+
+function saveUtilsState(sectionName, isExpanded) {
+	let expandedSections = JSON.parse(
+		localStorage.getItem("expandedUtilsSections") || "[]"
+	);
+
+	if (isExpanded) {
+		if (!expandedSections.includes(sectionName)) {
+			expandedSections.push(sectionName);
+		}
+	} else {
+		expandedSections = expandedSections.filter((s) => s !== sectionName);
+	}
+
+	localStorage.setItem(
+		"expandedUtilsSections",
+		JSON.stringify(expandedSections)
+	);
+}
+
+export function restoreState() {
+	// Restore active section
+	const activeSection = localStorage.getItem("activeSection");
+	if (activeSection) {
+		switchSection(activeSection);
+	}
+
+	// Restore expanded utils sections
+	const expandedSections = JSON.parse(
+		localStorage.getItem("expandedUtilsSections") || "[]"
+	);
+	expandedSections.forEach((sectionName) => {
+		const header = document.querySelector(
+			`.utils-section-header[data-section="${sectionName}"]`
+		);
+		if (header) {
+			const content = header.nextElementSibling;
+			content.classList.remove("collapsed");
+			header.classList.add("expanded");
+		}
+	});
 }
 
 function setupCollapsibleSections() {
@@ -53,6 +102,14 @@ function setupCollapsibleSections() {
 				content.classList.add("collapsed");
 				header.classList.remove("expanded");
 			}
+		});
+
+		// Add click listener for saving state
+		header.addEventListener("click", () => {
+			const content = header.nextElementSibling;
+			const isExpanded = !content.classList.contains("collapsed");
+			const sectionName = header.dataset.section;
+			saveUtilsState(sectionName, isExpanded);
 		});
 	});
 }

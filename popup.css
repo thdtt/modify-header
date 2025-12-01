@@ -29,7 +29,7 @@ body {
 
 /* Header */
 .header {
-	background: linear-gradient(135deg, #016b61 0%, #70b2b2 100%);
+	background: #016b61;
 	color: white;
 	padding: 20px;
 	display: flex;
@@ -148,7 +148,7 @@ body {
 	width: 100%;
 	margin-top: 16px;
 	padding: 12px;
-	background: linear-gradient(135deg, #016b61 0%, #70b2b2 100%);
+	background: #016b61;
 	color: white;
 	border: none;
 	border-radius: 8px;
@@ -1192,7 +1192,7 @@ body {
 	justify-content: space-between;
 	align-items: center;
 	padding: 16px 20px;
-	background: linear-gradient(135deg, #016b61 0%, #70b2b2 100%);
+	background: #016b61;
 	color: white;
 	cursor: pointer;
 	user-select: none;
@@ -1200,7 +1200,7 @@ body {
 }
 
 .utils-section-header:hover {
-	background: linear-gradient(135deg, #014d47 0%, #5a9999 100%);
+	background: #014d47;
 }
 
 .utils-section-title {
