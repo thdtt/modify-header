@@ -9,6 +9,7 @@ export function init() {
 	});
 	document.getElementById("importLocalStorageFile").addEventListener("change", importLocalStorage);
 	document.getElementById("previewLocalStorageBtn").addEventListener("click", previewLocalStorage);
+	document.getElementById("clearLocalStorageBtn").addEventListener("click", clearLocalStorage);
 
 	// Session Storage
 	document.getElementById("exportSessionStorageBtn").addEventListener("click", exportSessionStorage);
@@ -17,6 +18,7 @@ export function init() {
 	});
 	document.getElementById("importSessionStorageFile").addEventListener("change", importSessionStorage);
 	document.getElementById("previewSessionStorageBtn").addEventListener("click", previewSessionStorage);
+	document.getElementById("clearSessionStorageBtn").addEventListener("click", clearSessionStorage);
 
 	// Cookies
 	document.getElementById("exportCookiesBtn").addEventListener("click", exportCookies);
@@ -25,6 +27,7 @@ export function init() {
 	});
 	document.getElementById("importCookiesFile").addEventListener("change", importCookies);
 	document.getElementById("previewCookiesBtn").addEventListener("click", previewCookies);
+	document.getElementById("clearCookiesBtn").addEventListener("click", clearCookies);
 }
 
 function createStorageItemHTML(key, value, index) {
@@ -534,5 +537,115 @@ Expires: ${cookie.expirationDate
 		console.error("Error previewing cookies:", error);
 		contentDiv.innerHTML = `<div class="storage-preview-empty" style="color: #f44336;">Error: ${escapeHtml(error.message)}</div>`;
 		previewDiv.classList.remove("hidden");
+	}
+}
+
+// Clear Local Storage
+async function clearLocalStorage() {
+	if (!confirm("⚠️ WARNING: This will permanently delete ALL Local Storage data for the current site.\n\nAre you sure you want to continue?")) {
+		return;
+	}
+
+	try {
+		const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+		const tabId = tabs[0]?.id;
+
+		if (!tabId) {
+			throw new Error("Could not get current tab");
+		}
+
+		await chrome.scripting.executeScript({
+			target: { tabId: tabId },
+			func: () => {
+				localStorage.clear();
+			},
+		});
+
+		// Hide preview if it's showing
+		const previewDiv = document.getElementById("localStoragePreview");
+		previewDiv.classList.add("hidden");
+
+		alert("Local Storage cleared successfully!");
+	} catch (error) {
+		console.error("Error clearing local storage:", error);
+		alert(`Failed to clear Local Storage: ${error.message}`);
+	}
+}
+
+// Clear Session Storage
+async function clearSessionStorage() {
+	if (!confirm("⚠️ WARNING: This will permanently delete ALL Session Storage data for the current site.\n\nAre you sure you want to continue?")) {
+		return;
+	}
+
+	try {
+		const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+		const tabId = tabs[0]?.id;
+
+		if (!tabId) {
+			throw new Error("Could not get current tab");
+		}
+
+		await chrome.scripting.executeScript({
+			target: { tabId: tabId },
+			func: () => {
+				sessionStorage.clear();
+			},
+		});
+
+		// Hide preview if it's showing
+		const previewDiv = document.getElementById("sessionStoragePreview");
+		previewDiv.classList.add("hidden");
+
+		alert("Session Storage cleared successfully!");
+	} catch (error) {
+		console.error("Error clearing session storage:", error);
+		alert(`Failed to clear Session Storage: ${error.message}`);
+	}
+}
+
+// Clear Cookies
+async function clearCookies() {
+	try {
+		const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+		const url = tabs[0]?.url;
+
+		if (!url) {
+			throw new Error("Could not get current tab URL");
+		}
+
+		// Get all cookies for the current site
+		const cookies = await chrome.cookies.getAll({ url: url });
+
+		if (cookies.length === 0) {
+			alert("No cookies found for the current site.");
+			return;
+		}
+
+		if (!confirm(`⚠️ WARNING: This will permanently delete ${cookies.length} cookie(s) for the current site.\n\nAre you sure you want to continue?`)) {
+			return;
+		}
+
+		let successCount = 0;
+		for (const cookie of cookies) {
+			try {
+				await chrome.cookies.remove({
+					url: url,
+					name: cookie.name,
+				});
+				successCount++;
+			} catch (err) {
+				console.warn(`Failed to remove cookie ${cookie.name}:`, err);
+			}
+		}
+
+		// Hide preview if it's showing
+		const previewDiv = document.getElementById("cookiesPreview");
+		previewDiv.classList.add("hidden");
+
+		alert(`Successfully cleared ${successCount} cookie(s)!`);
+	} catch (error) {
+		console.error("Error clearing cookies:", error);
+		alert(`Failed to clear Cookies: ${error.message}`);
 	}
 }

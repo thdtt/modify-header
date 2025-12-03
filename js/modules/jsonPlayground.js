@@ -1,13 +1,18 @@
 // JSON Playground module
-import { escapeHtml } from '../utils/dom.js';
+import { escapeHtml } from "../utils/dom.js";
 
 export function init() {
 	const beautifyBtn = document.getElementById("beautifyJsonBtn");
+	const minifyBtn = document.getElementById("minifyJsonBtn");
 	const clearBtn = document.getElementById("clearJsonBtn");
 	const copyFormattedBtn = document.getElementById("copyFormattedJsonBtn");
-
+``
 	if (beautifyBtn) {
 		beautifyBtn.addEventListener("click", beautifyJSON);
+	}
+
+	if (minifyBtn) {
+		minifyBtn.addEventListener("click", minifyJSON);
 	}
 
 	if (clearBtn) {
@@ -16,7 +21,9 @@ export function init() {
 
 	if (copyFormattedBtn) {
 		copyFormattedBtn.addEventListener("click", () => {
-			const formattedOutput = document.getElementById("formattedJsonOutput");
+			const formattedOutput = document.getElementById(
+				"formattedJsonOutput"
+			);
 			const text = formattedOutput.textContent;
 
 			if (text) {
@@ -58,8 +65,10 @@ function beautifyJSON() {
 	localStorage.setItem("jsonPlaygroundInput", input);
 
 	if (!input) {
-		formattedOutput.innerHTML = '<div class="json-error">Please enter JSON to beautify</div>';
-		treeOutput.innerHTML = '<div class="json-error">Please enter JSON to beautify</div>';
+		formattedOutput.innerHTML =
+			'<div class="json-error">Please enter JSON to beautify</div>';
+		treeOutput.innerHTML =
+			'<div class="json-error">Please enter JSON to beautify</div>';
 		if (copyBtn) copyBtn.classList.add("hidden");
 		localStorage.removeItem("jsonPlaygroundOutput");
 		return;
@@ -80,7 +89,52 @@ function beautifyJSON() {
 
 		switchJsonView("formatted");
 	} catch (error) {
-		const errorMsg = `<div class="json-error">Invalid JSON: ${escapeHtml(error.message)}</div>`;
+		const errorMsg = `<div class="json-error">Invalid JSON: ${escapeHtml(
+			error.message
+		)}</div>`;
+		formattedOutput.innerHTML = errorMsg;
+		treeOutput.innerHTML = errorMsg;
+		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("jsonPlaygroundOutput");
+	}
+}
+
+function minifyJSON() {
+	const input = document.getElementById("jsonInput").value.trim();
+	const formattedOutput = document.getElementById("formattedJsonOutput");
+	const treeOutput = document.getElementById("treeJsonOutput");
+	const copyBtn = document.getElementById("copyFormattedJsonBtn");
+
+	localStorage.setItem("jsonPlaygroundInput", input);
+
+	if (!input) {
+		formattedOutput.innerHTML =
+			'<div class="json-error">Please enter JSON to minify</div>';
+		treeOutput.innerHTML =
+			'<div class="json-error">Please enter JSON to minify</div>';
+		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("jsonPlaygroundOutput");
+		return;
+	}
+
+	try {
+		const parsed = JSON.parse(input);
+		const minified = JSON.stringify(parsed);
+
+		formattedOutput.textContent = minified;
+
+		if (copyBtn) copyBtn.classList.remove("hidden");
+
+		treeOutput.innerHTML = createTreeNode(null, parsed);
+		setupTreeToggleListeners();
+
+		localStorage.setItem("jsonPlaygroundOutput", minified);
+
+		switchJsonView("formatted");
+	} catch (error) {
+		const errorMsg = `<div class="json-error">Invalid JSON: ${escapeHtml(
+			error.message
+		)}</div>`;
 		formattedOutput.innerHTML = errorMsg;
 		treeOutput.innerHTML = errorMsg;
 		if (copyBtn) copyBtn.classList.add("hidden");
@@ -98,7 +152,8 @@ function createTreeNode(key, value, level = 0) {
 	if (isExpandable) {
 		html += '<span class="json-tree-toggle">▼</span>';
 	} else {
-		html += '<span class="json-tree-toggle" style="visibility: hidden;">▼</span>';
+		html +=
+			'<span class="json-tree-toggle" style="visibility: hidden;">▼</span>';
 	}
 
 	if (key !== null) {
@@ -143,7 +198,9 @@ function setupTreeToggleListeners() {
 
 			if (children) {
 				children.classList.toggle("collapsed");
-				e.target.textContent = children.classList.contains("collapsed") ? "▶" : "▼";
+				e.target.textContent = children.classList.contains("collapsed")
+					? "▶"
+					: "▼";
 			}
 		}
 	});
@@ -159,7 +216,10 @@ function switchJsonView(view) {
 	});
 
 	document.querySelectorAll(".json-view").forEach((viewDiv) => {
-		if (viewDiv.id === `${view === "formatted" ? "formattedJson" : "treeJson"}View`) {
+		if (
+			viewDiv.id ===
+			`${view === "formatted" ? "formattedJson" : "treeJson"}View`
+		) {
 			viewDiv.classList.add("active");
 			viewDiv.classList.remove("hidden");
 		} else {
@@ -186,13 +246,15 @@ export function restoreState() {
 	if (jsonInput) {
 		document.getElementById("jsonInput").value = jsonInput;
 		if (jsonOutput) {
-			document.getElementById("formattedJsonOutput").textContent = jsonOutput;
+			document.getElementById("formattedJsonOutput").textContent =
+				jsonOutput;
 			const copyBtn = document.getElementById("copyFormattedJsonBtn");
 			if (copyBtn) copyBtn.classList.remove("hidden");
 
 			try {
 				const parsed = JSON.parse(jsonInput);
-				document.getElementById("treeJsonOutput").innerHTML = createTreeNode(null, parsed);
+				document.getElementById("treeJsonOutput").innerHTML =
+					createTreeNode(null, parsed);
 				setupTreeToggleListeners();
 			} catch (e) {
 				// Ignore parsing errors on restore

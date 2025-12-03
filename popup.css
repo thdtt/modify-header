@@ -170,12 +170,12 @@ body {
 }
 
 .btn-danger {
-	background: #f44336;
+	background: #f4483c;
 	color: white;
 }
 
 .btn-danger:hover {
-	background: #d32f2f;
+	background: #d23838;
 }
 
 .btn-edit {

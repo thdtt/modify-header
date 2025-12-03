@@ -159,18 +159,18 @@ body {
 
 /* Danger Button (Red) */
 .btn-danger {
-	background-color: #cf222e;
+	background-color: #f4483c;
 	color: #ffffff;
 	border-color: rgba(27, 31, 36, 0.15);
 }
 
 .btn-danger:hover {
-	background-color: #a40e26;
+	background-color: #d23838;
 	border-color: rgba(27, 31, 36, 0.15);
 }
 
 .btn-danger:active {
-	background-color: #8b0a1f;
+	background-color: #d23838;
 }
 
 /* Icon Button */
