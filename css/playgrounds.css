@@ -566,7 +566,7 @@
 }
 
 .storage-value-toggle:hover {
-	color: #016b61;
+	color: #01897b;
 }
 
 .storage-preview-empty {
@@ -683,8 +683,8 @@
 }
 
 .json-view-tab.active {
-	color: #016b61;
-	border-bottom-color: #016b61;
+	color: #01897b;
+	border-bottom-color: #01897b;
 }
 
 .json-view {
@@ -851,7 +851,7 @@
 }
 
 .utils-section-header:hover {
-	background: #016b61;
+	background: #01897b;
 }
 
 .utils-section-title {
@@ -1221,11 +1221,11 @@
 
 .secret-type-option input[type="radio"]:checked + span {
 	font-weight: 600;
-	color: #016b61;
+	color: #01897b;
 }
 
 .secret-type-option:has(input[type="radio"]:checked) {
-	border-color: #016b61;
+	border-color: #01897b;
 	background: #e5e9c5;
 }
 
@@ -1255,7 +1255,7 @@
 }
 
 .secret-slider-group label span {
-	color: #016b61;
+	color: #01897b;
 	font-weight: 700;
 	font-size: 14px;
 }
@@ -1283,7 +1283,7 @@
 }
 
 .secret-slider::-webkit-slider-thumb:hover {
-	background: #016b61;
+	background: #01897b;
 	transform: scale(1.2);
 }
 
@@ -1298,7 +1298,7 @@
 }
 
 .secret-slider::-moz-range-thumb:hover {
-	background: #016b61;
+	background: #01897b;
 	transform: scale(1.2);
 }
 

@@ -12,7 +12,7 @@
 .profile-form h2 {
 	font-size: 18px;
 	margin-bottom: 16px;
-	color: #016b61;
+	color: #01897b;
 }
 
 .form-group {
@@ -48,6 +48,42 @@
 	margin-top: 4px;
 	color: #888;
 	font-size: 11px;
+}
+
+/* URL Pattern Input Group */
+.url-pattern-input-group {
+	display: flex;
+	gap: 8px;
+	align-items: stretch;
+}
+
+.url-pattern-input-group input {
+	flex: 1;
+}
+
+.url-pattern-input-group .btn-icon {
+	padding: 8px 12px;
+	min-width: 40px;
+	background: #01897b;
+	color: white;
+	border: 1px solid #01897b;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 16px;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.url-pattern-input-group .btn-icon:hover {
+	background: #015550;
+	border-color: #015550;
+	transform: scale(1.05);
+}
+
+.url-pattern-input-group .btn-icon:active {
+	transform: scale(0.95);
 }
 
 /* Headers Container */

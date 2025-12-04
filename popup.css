@@ -29,7 +29,7 @@ body {
 
 /* Header */
 .header {
-	background: #016b61;
+	background: #01897b;
 	color: white;
 	padding: 20px;
 	display: flex;
@@ -77,8 +77,8 @@ body {
 }
 
 .nav-item.active {
-	color: #016b61;
-	border-bottom-color: #016b61;
+	color: #01897b;
+	border-bottom-color: #01897b;
 	background: white;
 }
 
@@ -114,12 +114,12 @@ body {
 
 .btn-primary {
 	background: white;
-	color: #016b61;
+	color: #01897b;
 }
 
 .btn-primary:hover {
 	background: #e5e9c5;
-	color: #016b61;
+	color: #01897b;
 }
 
 .btn-secondary {
@@ -149,7 +149,7 @@ body {
 	width: 100%;
 	margin-top: 16px;
 	padding: 12px;
-	background: #016b61;
+	background: #01897b;
 	color: white;
 	border: none;
 	border-radius: 8px;
@@ -219,7 +219,7 @@ body {
 .profile-form h2 {
 	font-size: 18px;
 	margin-bottom: 16px;
-	color: #016b61;
+	color: #01897b;
 }
 
 .form-group {
@@ -857,7 +857,7 @@ body {
 }
 
 .storage-copy-btn:hover {
-	background: #016b61;
+	background: #01897b;
 }
 
 .storage-copy-btn:active {
@@ -921,7 +921,7 @@ body {
 }
 
 .storage-value-toggle:hover {
-	color: #016b61;
+	color: #01897b;
 }
 
 .storage-preview-empty {
@@ -1038,8 +1038,8 @@ body {
 }
 
 .json-view-tab.active {
-	color: #016b61;
-	border-bottom-color: #016b61;
+	color: #01897b;
+	border-bottom-color: #01897b;
 }
 
 .json-view {
@@ -1079,7 +1079,7 @@ body {
 }
 
 .json-copy-btn:hover {
-	background: #016b61;
+	background: #01897b;
 }
 
 .json-copy-btn:active {
@@ -1193,7 +1193,7 @@ body {
 	justify-content: space-between;
 	align-items: center;
 	padding: 16px 20px;
-	background: #016b61;
+	background: #01897b;
 	color: white;
 	cursor: pointer;
 	user-select: none;
@@ -1571,11 +1571,11 @@ body {
 
 .secret-type-option input[type="radio"]:checked + span {
 	font-weight: 600;
-	color: #016b61;
+	color: #01897b;
 }
 
 .secret-type-option:has(input[type="radio"]:checked) {
-	border-color: #016b61;
+	border-color: #01897b;
 	background: #e5e9c5;
 }
 
@@ -1605,7 +1605,7 @@ body {
 }
 
 .secret-slider-group label span {
-	color: #016b61;
+	color: #01897b;
 	font-weight: 700;
 	font-size: 14px;
 }
@@ -1633,7 +1633,7 @@ body {
 }
 
 .secret-slider::-webkit-slider-thumb:hover {
-	background: #016b61;
+	background: #01897b;
 	transform: scale(1.2);
 }
 
@@ -1648,7 +1648,7 @@ body {
 }
 
 .secret-slider::-moz-range-thumb:hover {
-	background: #016b61;
+	background: #01897b;
 	transform: scale(1.2);
 }
 

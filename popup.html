@@ -50,7 +50,10 @@
 
         <div class="form-group">
           <label for="urlPattern">URL Pattern:</label>
-          <input type="text" id="urlPattern" placeholder="e.g., example.com or https://api.example.com/*" required>
+          <div class="url-pattern-input-group">
+            <input type="text" id="urlPattern" placeholder="e.g., example.com or https://api.example.com/*" required>
+            <button id="pickCurrentUrlBtn" class="btn btn-icon" title="Use current tab URL">🌐</button>
+          </div>
           <small>Examples: "example.com", "*.example.com", "https://api.example.com/*"</small>
         </div>
 

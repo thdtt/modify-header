@@ -6,7 +6,11 @@ let editingProfileId = null;
 
 // DOM Elements
 let profileForm, formTitle, profileName, urlPattern, headersContainer;
-let addHeaderBtn, saveProfileBtn, cancelProfileBtn, profilesContainer;
+let addHeaderBtn,
+	saveProfileBtn,
+	cancelProfileBtn,
+	profilesContainer,
+	pickCurrentUrlBtn;
 
 export function init() {
 	// Cache DOM elements
@@ -19,6 +23,7 @@ export function init() {
 	saveProfileBtn = document.getElementById("saveProfileBtn");
 	cancelProfileBtn = document.getElementById("cancelProfileBtn");
 	profilesContainer = document.getElementById("profilesContainer");
+	pickCurrentUrlBtn = document.getElementById("pickCurrentUrlBtn");
 
 	// Setup event listeners
 	const createProfileBtnBottom = document.getElementById(
@@ -31,6 +36,10 @@ export function init() {
 	addHeaderBtn.addEventListener("click", addHeaderField);
 	saveProfileBtn.addEventListener("click", saveProfile);
 	cancelProfileBtn.addEventListener("click", hideForm);
+
+	if (pickCurrentUrlBtn) {
+		pickCurrentUrlBtn.addEventListener("click", pickCurrentTabUrl);
+	}
 
 	// Event delegation for header removal
 	headersContainer.addEventListener("click", (e) => {
@@ -197,6 +206,22 @@ function editProfile(profileId) {
 function hideForm() {
 	profileForm.classList.add("hidden");
 	editingProfileId = null;
+}
+
+async function pickCurrentTabUrl() {
+	try {
+		const [tab] = await chrome.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+		if (tab && tab.url) {
+			urlPattern.value = tab.url;
+			urlPattern.focus();
+		}
+	} catch (error) {
+		console.error("Error getting current tab URL:", error);
+		showError("Failed to get current tab URL");
+	}
 }
 
 function addHeaderField(header = null) {
