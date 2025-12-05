@@ -1434,3 +1434,60 @@
 }
 
 /* Removed #startAutoClickBtn styles to inherit from .btn-primary */
+
+/* JSON Playground Button Colors */
+#beautifyJsonBtn {
+	background: #4caf50;
+	border-color: #4caf50;
+	color: white;
+}
+
+#beautifyJsonBtn:hover {
+	background: #45a049;
+	border-color: #45a049;
+}
+
+#minifyJsonBtn {
+	background: #2196f3;
+	border-color: #2196f3;
+	color: white;
+}
+
+#minifyJsonBtn:hover {
+	background: #0b7dda;
+	border-color: #0b7dda;
+}
+
+#escapeJsonBtn {
+	background: #ff9800;
+	border-color: #ff9800;
+	color: white;
+}
+
+#escapeJsonBtn:hover {
+	background: #e68900;
+	border-color: #e68900;
+}
+
+#unescapeJsonBtn {
+	background: #9c27b0;
+	border-color: #9c27b0;
+	color: white;
+}
+
+#unescapeJsonBtn:hover {
+	background: #7b1fa2;
+	border-color: #7b1fa2;
+}
+
+#clearJsonBtn {
+	background: #f5f5f5;
+	border-color: #ddd;
+	color: #666;
+}
+
+#clearJsonBtn:hover {
+	background: #e0e0e0;
+	border-color: #ccc;
+	color: #333;
+}

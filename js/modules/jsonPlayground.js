@@ -4,15 +4,25 @@ import { escapeHtml } from "../utils/dom.js";
 export function init() {
 	const beautifyBtn = document.getElementById("beautifyJsonBtn");
 	const minifyBtn = document.getElementById("minifyJsonBtn");
+	const escapeBtn = document.getElementById("escapeJsonBtn");
+	const unescapeBtn = document.getElementById("unescapeJsonBtn");
 	const clearBtn = document.getElementById("clearJsonBtn");
 	const copyFormattedBtn = document.getElementById("copyFormattedJsonBtn");
-``
+
 	if (beautifyBtn) {
 		beautifyBtn.addEventListener("click", beautifyJSON);
 	}
 
 	if (minifyBtn) {
 		minifyBtn.addEventListener("click", minifyJSON);
+	}
+
+	if (escapeBtn) {
+		escapeBtn.addEventListener("click", escapeJSON);
+	}
+
+	if (unescapeBtn) {
+		unescapeBtn.addEventListener("click", unescapeJSON);
 	}
 
 	if (clearBtn) {
@@ -139,6 +149,156 @@ function minifyJSON() {
 		treeOutput.innerHTML = errorMsg;
 		if (copyBtn) copyBtn.classList.add("hidden");
 		localStorage.removeItem("jsonPlaygroundOutput");
+	}
+}
+
+function escapeJSON() {
+	const input = document.getElementById("jsonInput").value.trim();
+	const formattedOutput = document.getElementById("formattedJsonOutput");
+	const treeOutput = document.getElementById("treeJsonOutput");
+	const copyBtn = document.getElementById("copyFormattedJsonBtn");
+
+	localStorage.setItem("jsonPlaygroundInput", input);
+
+	if (!input) {
+		formattedOutput.innerHTML =
+			'<div class="json-error">Please enter JSON to escape</div>';
+		treeOutput.innerHTML =
+			'<div class="json-error">Please enter JSON to escape</div>';
+		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("jsonPlaygroundOutput");
+		return;
+	}
+
+	try {
+		const parsed = JSON.parse(input);
+		const escaped = JSON.stringify(JSON.stringify(parsed));
+
+		formattedOutput.textContent = escaped;
+
+		if (copyBtn) copyBtn.classList.remove("hidden");
+
+		treeOutput.innerHTML = createTreeNode(null, parsed);
+		setupTreeToggleListeners();
+
+		localStorage.setItem("jsonPlaygroundOutput", escaped);
+
+		switchJsonView("formatted");
+	} catch (error) {
+		const errorMsg = `<div class="json-error">Invalid JSON: ${escapeHtml(
+			error.message
+		)}</div>`;
+		formattedOutput.innerHTML = errorMsg;
+		treeOutput.innerHTML = errorMsg;
+		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("jsonPlaygroundOutput");
+	}
+}
+
+function unescapeJSON() {
+	const input = document.getElementById("jsonInput").value.trim();
+	const formattedOutput = document.getElementById("formattedJsonOutput");
+	const treeOutput = document.getElementById("treeJsonOutput");
+	const copyBtn = document.getElementById("copyFormattedJsonBtn");
+
+	localStorage.setItem("jsonPlaygroundInput", input);
+
+	if (!input) {
+		formattedOutput.innerHTML =
+			'<div class="json-error">Please enter JSON to unescape</div>';
+		treeOutput.innerHTML =
+			'<div class="json-error">Please enter JSON to unescape</div>';
+		if (copyBtn) copyBtn.classList.add("hidden");
+		localStorage.removeItem("jsonPlaygroundOutput");
+		return;
+	}
+
+	try {
+		// Try to parse as JSON first (handles Unicode escapes automatically)
+		const parsed = JSON.parse(input);
+
+		// Custom function to stringify without escaping Unicode
+		function stringifyWithUnicode(obj, indent = 0) {
+			const spaces = '  '.repeat(indent);
+			const nextSpaces = '  '.repeat(indent + 1);
+
+			if (obj === null) return 'null';
+			if (typeof obj === 'boolean') return obj.toString();
+			if (typeof obj === 'number') return obj.toString();
+			if (typeof obj === 'string') return `"${obj}"`;
+
+			if (Array.isArray(obj)) {
+				if (obj.length === 0) return '[]';
+				const items = obj.map(item => `${nextSpaces}${stringifyWithUnicode(item, indent + 1)}`).join(',\n');
+				return `[\n${items}\n${spaces}]`;
+			}
+
+			if (typeof obj === 'object') {
+				const keys = Object.keys(obj);
+				if (keys.length === 0) return '{}';
+				const items = keys.map(key => {
+					const value = stringifyWithUnicode(obj[key], indent + 1);
+					return `${nextSpaces}"${key}": ${value}`;
+				}).join(',\n');
+				return `{\n${items}\n${spaces}}`;
+			}
+
+			return String(obj);
+		}
+
+		const formatted = stringifyWithUnicode(parsed, 0);
+
+		formattedOutput.textContent = formatted;
+
+		if (copyBtn) copyBtn.classList.remove("hidden");
+
+		treeOutput.innerHTML = createTreeNode(null, parsed);
+		setupTreeToggleListeners();
+
+		localStorage.setItem("jsonPlaygroundOutput", formatted);
+
+		switchJsonView("formatted");
+	} catch (firstError) {
+		// If direct parsing fails, try to handle it as an escaped JSON string
+		try {
+			const unescaped = JSON.parse(input);
+
+			if (typeof unescaped === 'string') {
+				// Try to parse the unescaped string as JSON
+				try {
+					const parsed = JSON.parse(unescaped);
+					const formatted = JSON.stringify(parsed, null, 2);
+
+					formattedOutput.textContent = formatted;
+
+					if (copyBtn) copyBtn.classList.remove("hidden");
+
+					treeOutput.innerHTML = createTreeNode(null, parsed);
+					setupTreeToggleListeners();
+
+					localStorage.setItem("jsonPlaygroundOutput", formatted);
+
+					switchJsonView("formatted");
+				} catch (e) {
+					// If it's not valid JSON, just show the unescaped string
+					formattedOutput.textContent = unescaped;
+					treeOutput.innerHTML = '<div class="json-error">Unescaped content is not valid JSON</div>';
+					if (copyBtn) copyBtn.classList.remove("hidden");
+					localStorage.setItem("jsonPlaygroundOutput", unescaped);
+					switchJsonView("formatted");
+				}
+			} else {
+				throw new Error("Input format not recognized");
+			}
+		} catch (error) {
+			const errorMsg = `<div class="json-error">Invalid input: ${escapeHtml(
+				error.message
+			)}</div>`;
+			formattedOutput.innerHTML = errorMsg;
+			treeOutput.innerHTML = errorMsg;
+			if (copyBtn) copyBtn.classList.add("hidden");
+			localStorage.removeItem("jsonPlaygroundOutput");
+		}
 	}
 }
 
