@@ -38,6 +38,7 @@ function switchSection(sectionName) {
 	} else if (sectionName === "utils") {
 		document.getElementById("utilsSection").classList.add("active");
 		document.getElementById("headerTitle").textContent = "Utils";
+		document.getElementById("headerActions").style.display = "none";
 	}
 
 	saveNavigationState(sectionName);
