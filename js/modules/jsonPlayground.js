@@ -153,7 +153,7 @@ function minifyJSON() {
 }
 
 function escapeJSON() {
-	const input = document.getElementById("jsonInput").value.trim();
+	const input = document.getElementById("jsonInput").value;
 	const formattedOutput = document.getElementById("formattedJsonOutput");
 	const treeOutput = document.getElementById("treeJsonOutput");
 	const copyBtn = document.getElementById("copyFormattedJsonBtn");
@@ -162,41 +162,38 @@ function escapeJSON() {
 
 	if (!input) {
 		formattedOutput.innerHTML =
-			'<div class="json-error">Please enter JSON to escape</div>';
+			'<div class="json-error">Please enter text to escape</div>';
 		treeOutput.innerHTML =
-			'<div class="json-error">Please enter JSON to escape</div>';
+			'<div class="json-error">Please enter text to escape</div>';
 		if (copyBtn) copyBtn.classList.add("hidden");
 		localStorage.removeItem("jsonPlaygroundOutput");
 		return;
 	}
 
-	try {
-		const parsed = JSON.parse(input);
-		const escaped = JSON.stringify(JSON.stringify(parsed));
+	// Escape special characters in the raw string
+	const escaped = input
+		.replace(/\\/g, "\\\\") // Backslash
+		.replace(/"/g, '\\"') // Double quote
+		.replace(/\n/g, "\\n") // Newline
+		.replace(/\r/g, "\\r") // Carriage return
+		.replace(/\t/g, "\\t") // Tab
+		.replace(/\f/g, "\\f"); // Backspace
 
-		formattedOutput.textContent = escaped;
+	formattedOutput.textContent = escaped;
 
-		if (copyBtn) copyBtn.classList.remove("hidden");
+	if (copyBtn) copyBtn.classList.remove("hidden");
 
-		treeOutput.innerHTML = createTreeNode(null, parsed);
-		setupTreeToggleListeners();
+	// Clear tree view for raw text escape
+	treeOutput.innerHTML =
+		'<div class="json-error">Tree view not available for escaped text</div>';
 
-		localStorage.setItem("jsonPlaygroundOutput", escaped);
+	localStorage.setItem("jsonPlaygroundOutput", escaped);
 
-		switchJsonView("formatted");
-	} catch (error) {
-		const errorMsg = `<div class="json-error">Invalid JSON: ${escapeHtml(
-			error.message
-		)}</div>`;
-		formattedOutput.innerHTML = errorMsg;
-		treeOutput.innerHTML = errorMsg;
-		if (copyBtn) copyBtn.classList.add("hidden");
-		localStorage.removeItem("jsonPlaygroundOutput");
-	}
+	switchJsonView("formatted");
 }
 
 function unescapeJSON() {
-	const input = document.getElementById("jsonInput").value.trim();
+	const input = document.getElementById("jsonInput").value;
 	const formattedOutput = document.getElementById("formattedJsonOutput");
 	const treeOutput = document.getElementById("treeJsonOutput");
 	const copyBtn = document.getElementById("copyFormattedJsonBtn");
@@ -205,101 +202,46 @@ function unescapeJSON() {
 
 	if (!input) {
 		formattedOutput.innerHTML =
-			'<div class="json-error">Please enter JSON to unescape</div>';
+			'<div class="json-error">Please enter text to unescape</div>';
 		treeOutput.innerHTML =
-			'<div class="json-error">Please enter JSON to unescape</div>';
+			'<div class="json-error">Please enter text to unescape</div>';
 		if (copyBtn) copyBtn.classList.add("hidden");
 		localStorage.removeItem("jsonPlaygroundOutput");
 		return;
 	}
 
+	// Unescape in correct order: backslash FIRST, then others, then Unicode last
+	let unescaped = input
+		.replace(/\\\\/g, "\x00") // Temporarily replace \\ with placeholder
+		.replace(/\\n/g, "\n") // Newline
+		.replace(/\\r/g, "\r") // Carriage return
+		.replace(/\\t/g, "\t") // Tab
+		.replace(/\\f/g, "\f") // Form feed
+		.replace(/\\"/g, '"') // Double quote
+		.replace(/\x00/g, "\\") // Restore backslash from placeholder
+		.replace(/\\u([0-9A-Fa-f]{4})/g, (_match, hex) => {
+			// Unescape Unicode sequences like \u1EA1
+			return String.fromCharCode(parseInt(hex, 16));
+		});
+
+	formattedOutput.textContent = unescaped;
+
+	if (copyBtn) copyBtn.classList.remove("hidden");
+
+	// Try to parse as JSON for tree view
 	try {
-		// Try to parse as JSON first (handles Unicode escapes automatically)
-		const parsed = JSON.parse(input);
-
-		// Custom function to stringify without escaping Unicode
-		function stringifyWithUnicode(obj, indent = 0) {
-			const spaces = '  '.repeat(indent);
-			const nextSpaces = '  '.repeat(indent + 1);
-
-			if (obj === null) return 'null';
-			if (typeof obj === 'boolean') return obj.toString();
-			if (typeof obj === 'number') return obj.toString();
-			if (typeof obj === 'string') return `"${obj}"`;
-
-			if (Array.isArray(obj)) {
-				if (obj.length === 0) return '[]';
-				const items = obj.map(item => `${nextSpaces}${stringifyWithUnicode(item, indent + 1)}`).join(',\n');
-				return `[\n${items}\n${spaces}]`;
-			}
-
-			if (typeof obj === 'object') {
-				const keys = Object.keys(obj);
-				if (keys.length === 0) return '{}';
-				const items = keys.map(key => {
-					const value = stringifyWithUnicode(obj[key], indent + 1);
-					return `${nextSpaces}"${key}": ${value}`;
-				}).join(',\n');
-				return `{\n${items}\n${spaces}}`;
-			}
-
-			return String(obj);
-		}
-
-		const formatted = stringifyWithUnicode(parsed, 0);
-
-		formattedOutput.textContent = formatted;
-
-		if (copyBtn) copyBtn.classList.remove("hidden");
-
+		const parsed = JSON.parse(unescaped);
 		treeOutput.innerHTML = createTreeNode(null, parsed);
 		setupTreeToggleListeners();
-
-		localStorage.setItem("jsonPlaygroundOutput", formatted);
-
-		switchJsonView("formatted");
-	} catch (firstError) {
-		// If direct parsing fails, try to handle it as an escaped JSON string
-		try {
-			const unescaped = JSON.parse(input);
-
-			if (typeof unescaped === 'string') {
-				// Try to parse the unescaped string as JSON
-				try {
-					const parsed = JSON.parse(unescaped);
-					const formatted = JSON.stringify(parsed, null, 2);
-
-					formattedOutput.textContent = formatted;
-
-					if (copyBtn) copyBtn.classList.remove("hidden");
-
-					treeOutput.innerHTML = createTreeNode(null, parsed);
-					setupTreeToggleListeners();
-
-					localStorage.setItem("jsonPlaygroundOutput", formatted);
-
-					switchJsonView("formatted");
-				} catch (e) {
-					// If it's not valid JSON, just show the unescaped string
-					formattedOutput.textContent = unescaped;
-					treeOutput.innerHTML = '<div class="json-error">Unescaped content is not valid JSON</div>';
-					if (copyBtn) copyBtn.classList.remove("hidden");
-					localStorage.setItem("jsonPlaygroundOutput", unescaped);
-					switchJsonView("formatted");
-				}
-			} else {
-				throw new Error("Input format not recognized");
-			}
-		} catch (error) {
-			const errorMsg = `<div class="json-error">Invalid input: ${escapeHtml(
-				error.message
-			)}</div>`;
-			formattedOutput.innerHTML = errorMsg;
-			treeOutput.innerHTML = errorMsg;
-			if (copyBtn) copyBtn.classList.add("hidden");
-			localStorage.removeItem("jsonPlaygroundOutput");
-		}
+	} catch (e) {
+		// If not valid JSON, clear tree view
+		treeOutput.innerHTML =
+			'<div class="json-error">Tree view not available (not valid JSON)</div>';
 	}
+
+	localStorage.setItem("jsonPlaygroundOutput", unescaped);
+
+	switchJsonView("formatted");
 }
 
 function createTreeNode(key, value, level = 0) {
