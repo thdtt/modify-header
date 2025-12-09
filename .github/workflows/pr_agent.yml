@@ -22,3 +22,7 @@ jobs:
           github_action_config.auto_review: "true"
           github_action_config.auto_describe: "true"
           github_action_config.auto_improve: "true"
+          config.large_patch_policy: "clip"
+          config.max_model_tokens: "16000"
+          config.patch_extra_lines_before: "3"
+          config.patch_extra_lines_after: "1"
