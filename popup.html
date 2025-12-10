@@ -403,6 +403,32 @@
         </div>
       </div>
 
+      <!-- QR Code Reader -->
+      <div class="utils-section">
+        <div class="utils-section-header" data-section="qrReader">
+          <h2 class="utils-section-title">QR Code Reader</h2>
+          <span class="utils-section-arrow">▼</span>
+        </div>
+        <div class="utils-section-content collapsed" id="qrReaderContent">
+          <div class="qr-reader-playground">
+            <div class="qr-reader-controls">
+              <div class="qr-reader-actions">
+                <button id="captureQRBtn" class="btn btn-primary">
+                  📷 Capture QR Code
+                </button>
+                <div class="qr-output-group">
+                  <input type="text" id="qrOutput" class="qr-output-input"
+                    placeholder="QR code result will appear here..." readonly>
+                  <button id="copyQRBtn" class="btn btn-secondary btn-small secret-hidden">Copy</button>
+                </div>
+              </div>
+              <div id="qrStatus" class="status-message secret-hidden"></div>
+              <canvas id="qrCanvas" class="qr-canvas secret-hidden"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Hidden file inputs for storage import -->

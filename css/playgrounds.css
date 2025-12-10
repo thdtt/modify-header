@@ -1491,3 +1491,70 @@
 	border-color: #ccc;
 	color: #333;
 }
+
+/* QR Code Reader Playground */
+.qr-reader-playground {
+	padding: 20px;
+}
+
+.qr-reader-controls {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.qr-reader-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+#captureQRBtn {
+	background: #016b61;
+	border-color: #016b61;
+	color: white;
+	padding: 12px 20px;
+	font-size: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+#captureQRBtn:hover {
+	background: #015550;
+	border-color: #015550;
+}
+
+.qr-output-group {
+	display: flex;
+	gap: 8px;
+	align-items: stretch;
+}
+
+.qr-output-input {
+	flex: 1;
+	padding: 10px 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-family: "Monaco", "Menlo", "Courier New", monospace;
+	font-size: 13px;
+	background: #f9f9f9;
+}
+
+.qr-output-input:focus {
+	outline: none;
+	border-color: #70b2b2;
+	background: white;
+}
+
+#copyQRBtn {
+	min-width: 80px;
+}
+
+.qr-canvas {
+	max-width: 100%;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	margin-top: 12px;
+}

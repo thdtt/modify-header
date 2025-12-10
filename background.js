@@ -167,4 +167,50 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
     return true; // Keep the message channel open for async response
   }
+
+  // Handle QR code capture request (legacy)
+  if (request.action === 'captureTab') {
+    chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
+      sendResponse(dataUrl);
+    });
+    return true;
+  }
+
+  // Handle QR capture from content script
+  if (request.action === 'getCapture') {
+    const info = request.info;
+    chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
+      if (chrome.runtime.lastError) {
+        console.error('Capture error:', chrome.runtime.lastError);
+        return;
+      }
+      // Send captured image back to the content script
+      chrome.tabs.sendMessage(sender.tab.id, {
+        action: 'sendCaptureUrl',
+        url: dataUrl,
+        captureBoxLeft: info.captureBoxLeft,
+        captureBoxTop: info.captureBoxTop,
+        captureBoxWidth: info.captureBoxWidth,
+        captureBoxHeight: info.captureBoxHeight
+      });
+    });
+    return true;
+  }
+
+  // Handle QR result from content script - forward to popup if open
+  if (request.action === 'qrResult') {
+    // Store result for popup to retrieve
+    chrome.storage.local.set({
+      qrResult: request.data,
+      qrResultTimestamp: Date.now()
+    });
+    // Also try to send to any open popup
+    chrome.runtime.sendMessage({
+      action: 'qrCaptureResult',
+      data: request.data
+    }).catch(() => {
+      // Popup might not be open, that's ok
+    });
+    return true;
+  }
 });

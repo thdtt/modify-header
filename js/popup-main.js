@@ -8,6 +8,7 @@ import * as base64Playground from "./modules/base64Playground.js";
 import * as jwtPlayground from "./modules/jwtPlayground.js";
 import * as secretGenerator from "./modules/secretGenerator.js";
 import * as autoClick from "./modules/autoClick.js";
+import * as qrReader from "./modules/qrReader.js";
 
 // Initialize all modules
 document.addEventListener("DOMContentLoaded", () => {
@@ -24,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	jwtPlayground.init();
 	secretGenerator.init();
 	autoClick.init();
+	qrReader.init();
 
 	// Restore playground states
 	restorePlaygroundStates();
@@ -35,4 +37,5 @@ function restorePlaygroundStates() {
 	jwtPlayground.restoreState();
 	secretGenerator.restoreState();
 	autoClick.restoreState();
+	qrReader.restoreState();
 }
