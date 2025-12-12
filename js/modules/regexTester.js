@@ -41,16 +41,21 @@ function runTest() {
 
 	// Handle empty pattern
 	if (!pattern) {
-		highlightArea.innerHTML = escapeHtml(testString) || '<span class="regex-placeholder">Matches will be highlighted here...</span>';
-		matchDetails.innerHTML = '<span class="regex-placeholder">No matches yet</span>';
+		highlightArea.innerHTML =
+			escapeHtml(testString) ||
+			'<span class="regex-placeholder">Matches will be highlighted here...</span>';
+		matchDetails.innerHTML =
+			'<span class="regex-placeholder">No matches yet</span>';
 		matchCount.textContent = "(0)";
 		return;
 	}
 
 	// Handle empty test string
 	if (!testString) {
-		highlightArea.innerHTML = '<span class="regex-placeholder">Matches will be highlighted here...</span>';
-		matchDetails.innerHTML = '<span class="regex-placeholder">No matches yet</span>';
+		highlightArea.innerHTML =
+			'<span class="regex-placeholder">Matches will be highlighted here...</span>';
+		matchDetails.innerHTML =
+			'<span class="regex-placeholder">No matches yet</span>';
 		matchCount.textContent = "(0)";
 		return;
 	}
@@ -68,7 +73,10 @@ function runTest() {
 		regex.lastIndex = 0;
 
 		if (flags.includes("g")) {
-			while ((match = regex.exec(testString)) !== null && iterations < maxIterations) {
+			while (
+				(match = regex.exec(testString)) !== null &&
+				iterations < maxIterations
+			) {
 				iterations++;
 
 				// Prevent infinite loops on zero-length matches
@@ -79,12 +87,16 @@ function runTest() {
 				matches.push({
 					value: match[0],
 					index: match.index,
-					groups: match.slice(1)
+					groups: match.slice(1),
 				});
 
 				// Build highlighted string
-				highlighted += escapeHtml(testString.slice(lastIndex, match.index));
-				highlighted += `<mark class="regex-match">${escapeHtml(match[0])}</mark>`;
+				highlighted += escapeHtml(
+					testString.slice(lastIndex, match.index)
+				);
+				highlighted += `<mark class="regex-match">${escapeHtml(
+					match[0]
+				)}</mark>`;
 				lastIndex = match.index + match[0].length;
 			}
 			highlighted += escapeHtml(testString.slice(lastIndex));
@@ -94,12 +106,16 @@ function runTest() {
 				matches.push({
 					value: match[0],
 					index: match.index,
-					groups: match.slice(1)
+					groups: match.slice(1),
 				});
 
 				highlighted = escapeHtml(testString.slice(0, match.index));
-				highlighted += `<mark class="regex-match">${escapeHtml(match[0])}</mark>`;
-				highlighted += escapeHtml(testString.slice(match.index + match[0].length));
+				highlighted += `<mark class="regex-match">${escapeHtml(
+					match[0]
+				)}</mark>`;
+				highlighted += escapeHtml(
+					testString.slice(match.index + match[0].length)
+				);
 			} else {
 				highlighted = escapeHtml(testString);
 			}
@@ -122,7 +138,9 @@ function runTest() {
 						<span class="regex-match-position">pos: ${m.index}</span>`;
 
 					if (m.groups.length > 0) {
-						detail += `<span class="regex-match-groups">groups: [${m.groups.map((g) => `"${escapeHtml(g || "")}"`).join(", ")}]</span>`;
+						detail += `<span class="regex-match-groups">groups: [${m.groups
+							.map((g) => `"${escapeHtml(g || "")}"`)
+							.join(", ")}]</span>`;
 					}
 
 					detail += "</div>";
@@ -131,16 +149,20 @@ function runTest() {
 				.join("");
 
 			if (matches.length > 50) {
-				matchDetails.innerHTML += `<div class="regex-match-more">... and ${matches.length - 50} more matches</div>`;
+				matchDetails.innerHTML += `<div class="regex-match-more">... and ${
+					matches.length - 50
+				} more matches</div>`;
 			}
 		} else {
-			matchDetails.innerHTML = '<span class="regex-placeholder">No matches found</span>';
+			matchDetails.innerHTML =
+				'<span class="regex-placeholder">No matches found</span>';
 		}
 	} catch (e) {
 		errorDiv.textContent = e.message;
 		errorDiv.classList.remove("hidden");
 		highlightArea.innerHTML = escapeHtml(testString);
-		matchDetails.innerHTML = '<span class="regex-placeholder">Invalid pattern</span>';
+		matchDetails.innerHTML =
+			'<span class="regex-placeholder">Invalid pattern</span>';
 		matchCount.textContent = "(0)";
 	}
 }

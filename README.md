@@ -4,11 +4,11 @@ A Chrome extension that allows users to add, modify, and delete HTTP request hea
 
 ## Features
 
-- **Profile Management**: Create multiple profiles, each targeting specific websites
-- **Header Modification**: Add, modify, or delete HTTP headers
-- **Toggle Profiles**: Enable/disable profiles individually
-- **URL Pattern Matching**: Flexible URL pattern matching for targeting specific sites
-- **Privacy-Focused**: Uses Manifest V3 and declarativeNetRequest API
+-   **Profile Management**: Create multiple profiles, each targeting specific websites
+-   **Header Modification**: Add, modify, or delete HTTP headers
+-   **Toggle Profiles**: Enable/disable profiles individually
+-   **URL Pattern Matching**: Flexible URL pattern matching for targeting specific sites
+-   **Privacy-Focused**: Uses Manifest V3 and declarativeNetRequest API
 
 ## Installation
 
@@ -26,44 +26,50 @@ A Chrome extension that allows users to add, modify, and delete HTTP request hea
 2. Click "New Profile"
 3. Enter a profile name (e.g., "Development API")
 4. Enter a URL pattern:
-   - `example.com` - matches any URL containing example.com
-   - `*.example.com` - matches all subdomains of example.com
-   - `https://api.example.com/*` - matches all URLs starting with this
+    - `example.com` - matches any URL containing example.com
+    - `*.example.com` - matches all subdomains of example.com
+    - `https://api.example.com/*` - matches all URLs starting with this
 5. Add headers:
-   - **Add**: Add a new header to requests
-   - **Modify**: Change an existing header value
-   - **Delete**: Remove a header from requests
+    - **Add**: Add a new header to requests
+    - **Modify**: Change an existing header value
+    - **Delete**: Remove a header from requests
 6. Click "Save"
 
 ### Managing Profiles
 
-- **Enable/Disable**: Use the toggle switch on each profile
-- **Edit**: Click the "Edit" button to modify a profile
-- **Delete**: Click the "Delete" button to remove a profile
+-   **Enable/Disable**: Use the toggle switch on each profile
+-   **Edit**: Click the "Edit" button to modify a profile
+-   **Delete**: Click the "Delete" button to remove a profile
 
 ### Example Use Cases
 
 #### Development Environment
+
 **Profile**: Dev API Headers
 **URL Pattern**: `localhost:3000`
 **Headers**:
-- Add: `X-Debug-Mode` = `true`
-- Add: `Authorization` = `Bearer dev-token-123`
+
+-   Add: `X-Debug-Mode` = `true`
+-   Add: `Authorization` = `Bearer dev-token-123`
 
 #### API Testing
+
 **Profile**: Custom API Headers
 **URL Pattern**: `https://api.example.com/*`
 **Headers**:
-- Add: `X-API-Key` = `your-api-key`
-- Modify: `User-Agent` = `CustomBot/1.0`
-- Delete: `Referer`
+
+-   Add: `X-API-Key` = `your-api-key`
+-   Modify: `User-Agent` = `CustomBot/1.0`
+-   Delete: `Referer`
 
 #### CORS Testing
+
 **Profile**: CORS Headers
 **URL Pattern**: `example.com`
 **Headers**:
-- Add: `Origin` = `https://example.com`
-- Add: `Access-Control-Request-Method` = `POST`
+
+-   Add: `Origin` = `https://example.com`
+-   Add: `Access-Control-Request-Method` = `POST`
 
 ## File Structure
 
@@ -85,10 +91,10 @@ A Chrome extension that allows users to add, modify, and delete HTTP request hea
 
 ### Permissions
 
-- `declarativeNetRequest`: For modifying HTTP headers
-- `declarativeNetRequestWithHostAccess`: For host-specific modifications
-- `storage`: For saving user profiles
-- `<all_urls>`: For applying rules to any website
+-   `declarativeNetRequest`: For modifying HTTP headers
+-   `declarativeNetRequestWithHostAccess`: For host-specific modifications
+-   `storage`: For saving user profiles
+-   `<all_urls>`: For applying rules to any website
 
 ### Storage
 
@@ -96,22 +102,22 @@ Profiles are stored in `chrome.storage.local` with the following structure:
 
 ```javascript
 {
-  profiles: [
-    {
-      id: "unique-id",
-      name: "Profile Name",
-      urlPattern: "example.com",
-      enabled: true,
-      headers: [
-        {
-          action: "add",        // "add", "modify", or "delete"
-          name: "X-Custom-Header",
-          value: "custom-value"
-        }
-      ],
-      createdAt: 1234567890
-    }
-  ]
+	profiles: [
+		{
+			id: "unique-id",
+			name: "Profile Name",
+			urlPattern: "example.com",
+			enabled: true,
+			headers: [
+				{
+					action: "add", // "add", "modify", or "delete"
+					name: "X-Custom-Header",
+					value: "custom-value",
+				},
+			],
+			createdAt: 1234567890,
+		},
+	];
 }
 ```
 
@@ -119,16 +125,16 @@ Profiles are stored in `chrome.storage.local` with the following structure:
 
 The extension converts user-friendly URL patterns to `declarativeNetRequest` URL filters:
 
-- `example.com` → `*://*.example.com/*`
-- `https://api.example.com` → `https://api.example.com*`
-- `*.example.com` → Used as-is
-- Wildcards (`*`) are supported
+-   `example.com` → `*://*.example.com/*`
+-   `https://api.example.com` → `https://api.example.com*`
+-   `*.example.com` → Used as-is
+-   Wildcards (`*`) are supported
 
 ## Limitations
 
-- Maximum of 5000 dynamic rules (Chrome limitation)
-- Header modifications apply to the main document and all resource types
-- Some headers cannot be modified due to browser security restrictions (e.g., `Host`, `Cookie` in some contexts)
+-   Maximum of 5000 dynamic rules (Chrome limitation)
+-   Header modifications apply to the main document and all resource types
+-   Some headers cannot be modified due to browser security restrictions (e.g., `Host`, `Cookie` in some contexts)
 
 ## Troubleshooting
 
@@ -138,9 +144,9 @@ The extension converts user-friendly URL patterns to `declarativeNetRequest` URL
 2. Verify the URL pattern matches the target website
 3. Open Chrome DevTools > Network tab to inspect headers
 4. Check the extension's service worker logs:
-   - Go to `chrome://extensions/`
-   - Click "service worker" under `Modify Headers`
-   - Look for errors in the console
+    - Go to `chrome://extensions/`
+    - Click "service worker" under `Modify Headers`
+    - Look for errors in the console
 
 ### Headers not being applied?
 
@@ -151,11 +157,11 @@ The extension converts user-friendly URL patterns to `declarativeNetRequest` URL
 
 ### Profile changes not taking effect?
 
-- Changes are applied immediately when you save a profile
-- If issues persist, try:
-  1. Disable and re-enable the profile
-  2. Reload the extension from `chrome://extensions/`
-  3. Restart Chrome
+-   Changes are applied immediately when you save a profile
+-   If issues persist, try:
+    1. Disable and re-enable the profile
+    2. Reload the extension from `chrome://extensions/`
+    3. Restart Chrome
 
 ## Development
 
@@ -168,17 +174,18 @@ The extension converts user-friendly URL patterns to `declarativeNetRequest` URL
 
 ### Debugging
 
-- **Background Script**: Click "service worker" in `chrome://extensions/`
-- **Popup**: Right-click the popup and select "Inspect"
-- **Storage**: Use Chrome DevTools > Application > Storage > Local Storage
+-   **Background Script**: Click "service worker" in `chrome://extensions/`
+-   **Popup**: Right-click the popup and select "Inspect"
+-   **Storage**: Use Chrome DevTools > Application > Storage > Local Storage
 
 ## Privacy
 
 This extension:
-- Does NOT collect any data
-- Does NOT send data to external servers
-- Stores all data locally in your browser
-- Only modifies headers for websites matching your URL patterns
+
+-   Does NOT collect any data
+-   Does NOT send data to external servers
+-   Stores all data locally in your browser
+-   Only modifies headers for websites matching your URL patterns
 
 ## License
 
@@ -187,6 +194,7 @@ This project is provided as-is for educational and development purposes.
 ## Support
 
 For issues or questions:
+
 1. Check the Troubleshooting section above
 2. Review Chrome's [declarativeNetRequest API documentation](https://developer.chrome.com/docs/extensions/reference/declarativeNetRequest/)
 3. Inspect the browser console for error messages
@@ -194,8 +202,9 @@ For issues or questions:
 ## Version History
 
 ### v1.0 (Current)
-- Profile management with enable/disable
-- Import / Export / Clone Profiles
-- Add, modify, and delete headers
-- URL pattern matching
-- Manifest V3 compatibility
+
+-   Profile management with enable/disable
+-   Import / Export / Clone Profiles
+-   Add, modify, and delete headers
+-   URL pattern matching
+-   Manifest V3 compatibility

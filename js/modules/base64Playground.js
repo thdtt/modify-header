@@ -24,21 +24,24 @@ export function init() {
 			const text = output.value;
 
 			if (text) {
-				navigator.clipboard.writeText(text).then(() => {
-					copyBtn.textContent = "Copied!";
-					copyBtn.classList.add("copied");
+				navigator.clipboard
+					.writeText(text)
+					.then(() => {
+						copyBtn.textContent = "Copied!";
+						copyBtn.classList.add("copied");
 
-					setTimeout(() => {
-						copyBtn.textContent = "Copy";
-						copyBtn.classList.remove("copied");
-					}, 1500);
-				}).catch((err) => {
-					console.error("Failed to copy:", err);
-					copyBtn.textContent = "Failed";
-					setTimeout(() => {
-						copyBtn.textContent = "Copy";
-					}, 1500);
-				});
+						setTimeout(() => {
+							copyBtn.textContent = "Copy";
+							copyBtn.classList.remove("copied");
+						}, 1500);
+					})
+					.catch((err) => {
+						console.error("Failed to copy:", err);
+						copyBtn.textContent = "Failed";
+						setTimeout(() => {
+							copyBtn.textContent = "Copy";
+						}, 1500);
+					});
 			}
 		});
 	}

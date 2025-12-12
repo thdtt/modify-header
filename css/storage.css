@@ -1,8 +1,3 @@
-te;
-	padding: 6px 12px;
-	font-size: 12px;
-}
-
 .btn-clone:hover {
 	background: #7b1fa2;
 }
@@ -53,7 +48,7 @@ te;
 .form-group input:focus,
 .form-group select:focus {
 	outline: none;
-	border-color: #70B2B2;
+	border-color: #70b2b2;
 	box-shadow: 0 0 0 3px rgba(112, 178, 178, 0.15);
 }
 
@@ -130,4 +125,4 @@ te;
 .profiles-list h2 {
 	font-size: 16px;
 	margin-bottom: 16px;
-	color: #5
+}

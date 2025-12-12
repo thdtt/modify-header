@@ -1,6 +1,6 @@
 // Import/Export functionality
-import { escapeHtml, downloadJSON } from '../utils/dom.js';
-import { getCurrentProfiles, loadProfiles } from './profileManager.js';
+import { escapeHtml, downloadJSON } from "../utils/dom.js";
+import { getCurrentProfiles, loadProfiles } from "./profileManager.js";
 
 // DOM Elements
 let exportModal, importModal, exportProfilesList, importProfilesList;
@@ -65,7 +65,9 @@ function showExportModal() {
       <input type="checkbox" class="export-checkbox" value="${profile.id}">
       <span class="profile-checkbox-content">
         <span class="profile-checkbox-name">${escapeHtml(profile.name)}</span>
-        <span class="profile-checkbox-url">${escapeHtml(profile.urlPattern)}</span>
+        <span class="profile-checkbox-url">${escapeHtml(
+			profile.urlPattern
+		)}</span>
       </span>
     </label>
   `
@@ -86,7 +88,9 @@ function handleSelectAllExport() {
 }
 
 function confirmExport() {
-	const selectedCheckboxes = exportProfilesList.querySelectorAll(".export-checkbox:checked");
+	const selectedCheckboxes = exportProfilesList.querySelectorAll(
+		".export-checkbox:checked"
+	);
 
 	if (selectedCheckboxes.length === 0) {
 		alert("Please select at least one profile to export.");
@@ -95,8 +99,12 @@ function confirmExport() {
 
 	try {
 		const profiles = getCurrentProfiles();
-		const selectedIds = Array.from(selectedCheckboxes).map((cb) => cb.value);
-		const selectedProfiles = profiles.filter((p) => selectedIds.includes(p.id));
+		const selectedIds = Array.from(selectedCheckboxes).map(
+			(cb) => cb.value
+		);
+		const selectedProfiles = profiles.filter((p) =>
+			selectedIds.includes(p.id)
+		);
 
 		const exportData = {
 			version: "1.0",
@@ -106,7 +114,9 @@ function confirmExport() {
 
 		downloadJSON(exportData, `modify-header-profiles-${Date.now()}.json`);
 		hideExportModal();
-		console.log(`${selectedProfiles.length} profile(s) exported successfully`);
+		console.log(
+			`${selectedProfiles.length} profile(s) exported successfully`
+		);
 	} catch (error) {
 		console.error("Error exporting profiles:", error);
 		alert("Failed to export profiles. Please try again.");
@@ -156,8 +166,12 @@ function showImportModal() {
       <input type="checkbox" class="import-checkbox" value="${index}">
       <span class="profile-checkbox-content">
         <span class="profile-checkbox-name">${escapeHtml(profile.name)}</span>
-        <span class="profile-checkbox-url">${escapeHtml(profile.urlPattern)}</span>
-        <span class="profile-checkbox-info">${profile.headers.length} header(s)</span>
+        <span class="profile-checkbox-url">${escapeHtml(
+			profile.urlPattern
+		)}</span>
+        <span class="profile-checkbox-info">${
+			profile.headers.length
+		} header(s)</span>
       </span>
     </label>
   `
@@ -179,7 +193,9 @@ function handleSelectAllImport() {
 }
 
 async function confirmImport() {
-	const selectedCheckboxes = importProfilesList.querySelectorAll(".import-checkbox:checked");
+	const selectedCheckboxes = importProfilesList.querySelectorAll(
+		".import-checkbox:checked"
+	);
 
 	if (selectedCheckboxes.length === 0) {
 		alert("Please select at least one profile to import.");
@@ -188,7 +204,9 @@ async function confirmImport() {
 
 	try {
 		const profiles = getCurrentProfiles();
-		const selectedIndices = Array.from(selectedCheckboxes).map((cb) => parseInt(cb.value));
+		const selectedIndices = Array.from(selectedCheckboxes).map((cb) =>
+			parseInt(cb.value)
+		);
 		const selectedProfiles = pendingImportData.filter((_, index) =>
 			selectedIndices.includes(index)
 		);

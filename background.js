@@ -3,214 +3,223 @@
 
 // Listen for extension installation
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('Modify Headers installed');
-  updateRules();
+	console.log("Modify Headers installed");
+	updateRules();
 });
 
 // Listen for storage changes
 chrome.storage.onChanged.addListener((changes, namespace) => {
-  if (namespace === 'local' && changes.profiles) {
-    console.log('Profiles changed, updating rules');
-    updateRules();
-  }
+	if (namespace === "local" && changes.profiles) {
+		console.log("Profiles changed, updating rules");
+		updateRules();
+	}
 });
 
 // Main function to update declarativeNetRequest rules
 async function updateRules() {
-  try {
-    // Get all profiles from storage
-    const data = await chrome.storage.local.get('profiles');
-    const profiles = data.profiles || [];
+	try {
+		// Get all profiles from storage
+		const data = await chrome.storage.local.get("profiles");
+		const profiles = data.profiles || [];
 
-    // Filter enabled profiles
-    const enabledProfiles = profiles.filter(profile => profile.enabled);
+		// Filter enabled profiles
+		const enabledProfiles = profiles.filter((profile) => profile.enabled);
 
-    // Get existing dynamic rules
-    const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
-    const existingRuleIds = existingRules.map(rule => rule.id);
+		// Get existing dynamic rules
+		const existingRules =
+			await chrome.declarativeNetRequest.getDynamicRules();
+		const existingRuleIds = existingRules.map((rule) => rule.id);
 
-    // Generate new rules
-    const newRules = [];
-    let ruleId = 1;
+		// Generate new rules
+		const newRules = [];
+		let ruleId = 1;
 
-    for (const profile of enabledProfiles) {
-      const rules = generateRulesForProfile(profile, ruleId);
-      newRules.push(...rules);
-      ruleId += rules.length;
-    }
+		for (const profile of enabledProfiles) {
+			const rules = generateRulesForProfile(profile, ruleId);
+			newRules.push(...rules);
+			ruleId += rules.length;
+		}
 
-    // Update dynamic rules
-    await chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: existingRuleIds,
-      addRules: newRules
-    });
+		// Update dynamic rules
+		await chrome.declarativeNetRequest.updateDynamicRules({
+			removeRuleIds: existingRuleIds,
+			addRules: newRules,
+		});
 
-    console.log(`Updated rules: ${newRules.length} rules added`);
-  } catch (error) {
-    console.error('Error updating rules:', error);
-  }
+		console.log(`Updated rules: ${newRules.length} rules added`);
+	} catch (error) {
+		console.error("Error updating rules:", error);
+	}
 }
 
 // Generate declarativeNetRequest rules for a profile
 function generateRulesForProfile(profile, startRuleId) {
-  const rules = [];
-  let ruleId = startRuleId;
+	const rules = [];
+	let ruleId = startRuleId;
 
-  if (!profile.headers || profile.headers.length === 0) {
-    return rules;
-  }
+	if (!profile.headers || profile.headers.length === 0) {
+		return rules;
+	}
 
-  // Convert URL pattern to match pattern
-  const urlFilter = convertToUrlFilter(profile.urlPattern);
+	// Convert URL pattern to match pattern
+	const urlFilter = convertToUrlFilter(profile.urlPattern);
 
-  // Group headers by action type
-  const addHeaders = [];
-  const modifyHeaders = [];
-  const removeHeaders = [];
+	// Group headers by action type
+	const addHeaders = [];
+	const modifyHeaders = [];
+	const removeHeaders = [];
 
-  for (const header of profile.headers) {
-    if (!header.name) continue;
+	for (const header of profile.headers) {
+		if (!header.name) continue;
 
-    switch (header.action) {
-      case 'add':
-        addHeaders.push({
-          header: header.name.toLowerCase(),
-          operation: 'set',
-          value: header.value || ''
-        });
-        break;
-      case 'modify':
-        modifyHeaders.push({
-          header: header.name.toLowerCase(),
-          operation: 'set',
-          value: header.value || ''
-        });
-        break;
-      case 'delete':
-        removeHeaders.push({
-          header: header.name.toLowerCase(),
-          operation: 'remove'
-        });
-        break;
-    }
-  }
+		switch (header.action) {
+			case "add":
+				addHeaders.push({
+					header: header.name.toLowerCase(),
+					operation: "set",
+					value: header.value || "",
+				});
+				break;
+			case "modify":
+				modifyHeaders.push({
+					header: header.name.toLowerCase(),
+					operation: "set",
+					value: header.value || "",
+				});
+				break;
+			case "delete":
+				removeHeaders.push({
+					header: header.name.toLowerCase(),
+					operation: "remove",
+				});
+				break;
+		}
+	}
 
-  // Create a single rule that combines all header modifications
-  // We need separate rules for request and response headers
+	// Create a single rule that combines all header modifications
+	// We need separate rules for request and response headers
 
-  // Request headers rule
-  const requestHeaderMods = [...addHeaders, ...modifyHeaders, ...removeHeaders];
-  if (requestHeaderMods.length > 0) {
-    rules.push({
-      id: ruleId++,
-      priority: 1,
-      action: {
-        type: 'modifyHeaders',
-        requestHeaders: requestHeaderMods
-      },
-      condition: {
-        urlFilter: urlFilter,
-        resourceTypes: [
-          'main_frame',
-          'sub_frame',
-          'stylesheet',
-          'script',
-          'image',
-          'font',
-          'object',
-          'xmlhttprequest',
-          'ping',
-          'csp_report',
-          'media',
-          'websocket',
-          'webtransport',
-          'webbundle',
-          'other'
-        ]
-      }
-    });
-  }
+	// Request headers rule
+	const requestHeaderMods = [
+		...addHeaders,
+		...modifyHeaders,
+		...removeHeaders,
+	];
+	if (requestHeaderMods.length > 0) {
+		rules.push({
+			id: ruleId++,
+			priority: 1,
+			action: {
+				type: "modifyHeaders",
+				requestHeaders: requestHeaderMods,
+			},
+			condition: {
+				urlFilter: urlFilter,
+				resourceTypes: [
+					"main_frame",
+					"sub_frame",
+					"stylesheet",
+					"script",
+					"image",
+					"font",
+					"object",
+					"xmlhttprequest",
+					"ping",
+					"csp_report",
+					"media",
+					"websocket",
+					"webtransport",
+					"webbundle",
+					"other",
+				],
+			},
+		});
+	}
 
-  return rules;
+	return rules;
 }
 
 // Convert user-friendly URL pattern to declarativeNetRequest urlFilter
 function convertToUrlFilter(pattern) {
-  if (!pattern) return '*';
+	if (!pattern) return "*";
 
-  // If pattern is already a valid URL filter, use it
-  if (pattern.includes('*') || pattern.startsWith('||')) {
-    return pattern;
-  }
+	// If pattern is already a valid URL filter, use it
+	if (pattern.includes("*") || pattern.startsWith("||")) {
+		return pattern;
+	}
 
-  // If pattern looks like a domain
-  if (!pattern.includes('/')) {
-    return `*://*.${pattern}/*`;
-  }
+	// If pattern looks like a domain
+	if (!pattern.includes("/")) {
+		return `*://*.${pattern}/*`;
+	}
 
-  // If pattern looks like a full URL
-  if (pattern.startsWith('http://') || pattern.startsWith('https://')) {
-    return pattern + '*';
-  }
+	// If pattern looks like a full URL
+	if (pattern.startsWith("http://") || pattern.startsWith("https://")) {
+		return pattern + "*";
+	}
 
-  // Default: treat as domain pattern
-  return `*://*${pattern}*`;
+	// Default: treat as domain pattern
+	return `*://*${pattern}*`;
 }
 
 // Expose updateRules for manual refresh
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'updateRules') {
-    updateRules().then(() => {
-      sendResponse({ success: true });
-    }).catch(error => {
-      sendResponse({ success: false, error: error.message });
-    });
-    return true; // Keep the message channel open for async response
-  }
+	if (request.action === "updateRules") {
+		updateRules()
+			.then(() => {
+				sendResponse({ success: true });
+			})
+			.catch((error) => {
+				sendResponse({ success: false, error: error.message });
+			});
+		return true; // Keep the message channel open for async response
+	}
 
-  // Handle QR code capture request (legacy)
-  if (request.action === 'captureTab') {
-    chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
-      sendResponse(dataUrl);
-    });
-    return true;
-  }
+	// Handle QR code capture request (legacy)
+	if (request.action === "captureTab") {
+		chrome.tabs.captureVisibleTab(null, { format: "png" }, (dataUrl) => {
+			sendResponse(dataUrl);
+		});
+		return true;
+	}
 
-  // Handle QR capture from content script
-  if (request.action === 'getCapture') {
-    const info = request.info;
-    chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
-      if (chrome.runtime.lastError) {
-        console.error('Capture error:', chrome.runtime.lastError);
-        return;
-      }
-      // Send captured image back to the content script
-      chrome.tabs.sendMessage(sender.tab.id, {
-        action: 'sendCaptureUrl',
-        url: dataUrl,
-        captureBoxLeft: info.captureBoxLeft,
-        captureBoxTop: info.captureBoxTop,
-        captureBoxWidth: info.captureBoxWidth,
-        captureBoxHeight: info.captureBoxHeight
-      });
-    });
-    return true;
-  }
+	// Handle QR capture from content script
+	if (request.action === "getCapture") {
+		const info = request.info;
+		chrome.tabs.captureVisibleTab(null, { format: "png" }, (dataUrl) => {
+			if (chrome.runtime.lastError) {
+				console.error("Capture error:", chrome.runtime.lastError);
+				return;
+			}
+			// Send captured image back to the content script
+			chrome.tabs.sendMessage(sender.tab.id, {
+				action: "sendCaptureUrl",
+				url: dataUrl,
+				captureBoxLeft: info.captureBoxLeft,
+				captureBoxTop: info.captureBoxTop,
+				captureBoxWidth: info.captureBoxWidth,
+				captureBoxHeight: info.captureBoxHeight,
+			});
+		});
+		return true;
+	}
 
-  // Handle QR result from content script - forward to popup if open
-  if (request.action === 'qrResult') {
-    // Store result for popup to retrieve
-    chrome.storage.local.set({
-      qrResult: request.data,
-      qrResultTimestamp: Date.now()
-    });
-    // Also try to send to any open popup
-    chrome.runtime.sendMessage({
-      action: 'qrCaptureResult',
-      data: request.data
-    }).catch(() => {
-      // Popup might not be open, that's ok
-    });
-    return true;
-  }
+	// Handle QR result from content script - forward to popup if open
+	if (request.action === "qrResult") {
+		// Store result for popup to retrieve
+		chrome.storage.local.set({
+			qrResult: request.data,
+			qrResultTimestamp: Date.now(),
+		});
+		// Also try to send to any open popup
+		chrome.runtime
+			.sendMessage({
+				action: "qrCaptureResult",
+				data: request.data,
+			})
+			.catch(() => {
+				// Popup might not be open, that's ok
+			});
+		return true;
+	}
 });

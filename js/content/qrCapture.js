@@ -1,5 +1,5 @@
 // QR Code capture content script
-(function() {
+(function () {
 	// Always set up message listener (even if elements exist)
 	if (!window.__mh_qrCaptureInitialized) {
 		window.__mh_qrCaptureInitialized = true;
@@ -7,21 +7,23 @@
 		window.__mh_startX = 0;
 		window.__mh_startY = 0;
 
-		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-			if (message.action === "startQRCapture") {
-				sendResponse("beginCapture");
-				showGrayLayout();
-			} else if (message.action === "sendCaptureUrl") {
-				qrDecode(
-					message.url,
-					message.captureBoxLeft,
-					message.captureBoxTop,
-					message.captureBoxWidth,
-					message.captureBoxHeight
-				);
+		chrome.runtime.onMessage.addListener(
+			(message, sender, sendResponse) => {
+				if (message.action === "startQRCapture") {
+					sendResponse("beginCapture");
+					showGrayLayout();
+				} else if (message.action === "sendCaptureUrl") {
+					qrDecode(
+						message.url,
+						message.captureBoxLeft,
+						message.captureBoxTop,
+						message.captureBoxWidth,
+						message.captureBoxHeight
+					);
+				}
+				return true;
 			}
-			return true;
-		});
+		);
 
 		// ESC key handler
 		window.addEventListener("keydown", (event) => {
@@ -202,8 +204,8 @@
 					captureBoxLeft,
 					captureBoxTop,
 					captureBoxWidth,
-					captureBoxHeight
-				}
+					captureBoxHeight,
+				},
 			});
 		}, 150);
 	}
@@ -233,7 +235,12 @@
 				const scaledWidth = Math.round(width * devicePixelRatio);
 				const scaledHeight = Math.round(height * devicePixelRatio);
 
-				const imageData = ctx.getImageData(scaledLeft, scaledTop, scaledWidth, scaledHeight);
+				const imageData = ctx.getImageData(
+					scaledLeft,
+					scaledTop,
+					scaledWidth,
+					scaledHeight
+				);
 
 				// Decode QR code using jsQR
 				if (typeof jsQR === "undefined") {
@@ -242,19 +249,26 @@
 					return;
 				}
 
-				const code = jsQR(imageData.data, imageData.width, imageData.height, {
-					inversionAttempts: "attemptBoth"
-				});
+				const code = jsQR(
+					imageData.data,
+					imageData.width,
+					imageData.height,
+					{
+						inversionAttempts: "attemptBoth",
+					}
+				);
 
 				if (code && code.data) {
 					// Send result back to extension
 					chrome.runtime.sendMessage({
 						action: "qrResult",
-						data: code.data
+						data: code.data,
 					});
 					cleanup(true);
 				} else {
-					alert("No QR code found in selected area. Try selecting a larger or clearer area.");
+					alert(
+						"No QR code found in selected area. Try selecting a larger or clearer area."
+					);
 					cleanup(true);
 				}
 			} catch (err) {

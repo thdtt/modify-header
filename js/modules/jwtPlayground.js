@@ -61,8 +61,12 @@ function decodeJwt() {
 	const payloadOutput = document.getElementById("jwtPayload");
 	const statusDiv = document.getElementById("jwtValidationStatus");
 	const signatureStatus = document.getElementById("jwtSignatureStatus");
-	const headerCopyBtn = document.querySelector('.jwt-copy-btn[data-target="header"]');
-	const payloadCopyBtn = document.querySelector('.jwt-copy-btn[data-target="payload"]');
+	const headerCopyBtn = document.querySelector(
+		'.jwt-copy-btn[data-target="header"]'
+	);
+	const payloadCopyBtn = document.querySelector(
+		'.jwt-copy-btn[data-target="payload"]'
+	);
 
 	localStorage.setItem("jwtPlaygroundInput", input);
 
@@ -84,7 +88,9 @@ function decodeJwt() {
 		const parts = input.split(".");
 
 		if (parts.length !== 3) {
-			throw new Error("Invalid JWT format. Expected 3 parts separated by dots.");
+			throw new Error(
+				"Invalid JWT format. Expected 3 parts separated by dots."
+			);
 		}
 
 		const header = JSON.parse(base64UrlDecode(parts[0]));
@@ -136,7 +142,9 @@ function base64UrlDecode(str) {
 		return decodeURIComponent(
 			atob(base64)
 				.split("")
-				.map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+				.map(
+					(c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+				)
 				.join("")
 		);
 	} catch (e) {
@@ -188,7 +196,11 @@ async function verifyJwtSignature() {
 			["sign"]
 		);
 
-		const signature = await crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(signingInput));
+		const signature = await crypto.subtle.sign(
+			"HMAC",
+			cryptoKey,
+			encoder.encode(signingInput)
+		);
 
 		const signatureArray = new Uint8Array(signature);
 		let binary = "";
@@ -204,7 +216,8 @@ async function verifyJwtSignature() {
 			statusDiv.textContent = "✓ Signature verified successfully!";
 			statusDiv.className = "jwt-signature-status verified";
 		} else {
-			statusDiv.textContent = "✗ Signature verification failed. Invalid secret or corrupted token.";
+			statusDiv.textContent =
+				"✗ Signature verification failed. Invalid secret or corrupted token.";
 			statusDiv.className = "jwt-signature-status failed";
 		}
 
@@ -248,12 +261,16 @@ export function restoreState() {
 	}
 	if (jwtHeader) {
 		document.getElementById("jwtHeader").textContent = jwtHeader;
-		const headerCopyBtn = document.querySelector('.jwt-copy-btn[data-target="header"]');
+		const headerCopyBtn = document.querySelector(
+			'.jwt-copy-btn[data-target="header"]'
+		);
 		if (headerCopyBtn) headerCopyBtn.classList.remove("hidden");
 	}
 	if (jwtPayload) {
 		document.getElementById("jwtPayload").textContent = jwtPayload;
-		const payloadCopyBtn = document.querySelector('.jwt-copy-btn[data-target="payload"]');
+		const payloadCopyBtn = document.querySelector(
+			'.jwt-copy-btn[data-target="payload"]'
+		);
 		if (payloadCopyBtn) payloadCopyBtn.classList.remove("hidden");
 	}
 	if (jwtInput && jwtHeader && jwtPayload) {
