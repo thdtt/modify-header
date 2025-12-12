@@ -429,6 +429,141 @@
         </div>
       </div>
 
+      <!-- Epoch Time Converter -->
+      <div class="utils-section">
+        <div class="utils-section-header" data-section="epochConverter">
+          <h2 class="utils-section-title">Epoch Time Converter</h2>
+          <span class="utils-section-arrow">▼</span>
+        </div>
+        <div class="utils-section-content collapsed" id="epochConverterContent">
+          <div class="epoch-converter-playground">
+            <!-- Current Time Display -->
+            <div class="epoch-current-time">
+              <div class="epoch-current-row">
+                <span class="epoch-label">Current Epoch:</span>
+                <span id="currentTimestamp" class="epoch-value">--</span>
+                <button id="copyCurrentTimestamp" class="btn btn-small btn-copy" title="Copy">📋</button>
+              </div>
+              <div class="epoch-current-date" id="currentDate">--</div>
+            </div>
+
+            <!-- Timestamp to Date -->
+            <div class="epoch-section">
+              <label class="epoch-section-label">Timestamp → Date</label>
+              <div class="epoch-input-group">
+                <input type="text" id="timestampInput" class="epoch-input" placeholder="Enter epoch timestamp">
+                <div class="epoch-format-toggle">
+                  <label><input type="radio" name="timestampFormat" value="seconds" checked> sec</label>
+                  <label><input type="radio" name="timestampFormat" value="milliseconds"> ms</label>
+                </div>
+              </div>
+              <div class="epoch-results">
+                <div class="epoch-result-row">
+                  <span class="epoch-result-label">Local:</span>
+                  <span id="timestampToLocal" class="epoch-result-value">-</span>
+                </div>
+                <div class="epoch-result-row">
+                  <span class="epoch-result-label">UTC:</span>
+                  <span id="timestampToUTC" class="epoch-result-value">-</span>
+                </div>
+                <div class="epoch-result-row">
+                  <span class="epoch-result-label">Relative:</span>
+                  <span id="timestampToRelative" class="epoch-result-value">-</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Date to Timestamp -->
+            <div class="epoch-section">
+              <label class="epoch-section-label">Date → Timestamp</label>
+              <div class="epoch-input-group">
+                <input type="datetime-local" id="dateInput" class="epoch-input datetime-input">
+                <button id="dateToNowBtn" class="btn btn-small btn-now" title="Set to now">Now</button>
+              </div>
+              <div class="epoch-results">
+                <div class="epoch-result-row">
+                  <span class="epoch-result-label">Seconds:</span>
+                  <span id="dateToSeconds" class="epoch-result-value">-</span>
+                  <button class="btn btn-small btn-copy epoch-copy-btn hidden" data-target="dateToSeconds"
+                    title="Copy">📋</button>
+                </div>
+                <div class="epoch-result-row">
+                  <span class="epoch-result-label">Milliseconds:</span>
+                  <span id="dateToMilliseconds" class="epoch-result-value">-</span>
+                  <button class="btn btn-small btn-copy epoch-copy-btn hidden" data-target="dateToMilliseconds"
+                    title="Copy">📋</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RegEx Tester -->
+      <div class="utils-section">
+        <div class="utils-section-header" data-section="regexTester">
+          <h2 class="utils-section-title">RegEx Tester</h2>
+          <span class="utils-section-arrow">▼</span>
+        </div>
+        <div class="utils-section-content collapsed" id="regexTesterContent">
+          <div class="regex-tester-playground">
+            <!-- Pattern Input -->
+            <div class="regex-pattern-group">
+              <div class="regex-pattern-row">
+                <span class="regex-delimiter">/</span>
+                <input type="text" id="regexPattern" class="regex-pattern-input" placeholder="Enter regex pattern...">
+                <span class="regex-delimiter">/</span>
+                <input type="text" id="regexFlags" class="regex-flags-input" placeholder="gi" value="g" maxlength="6">
+              </div>
+              <div id="regexError" class="regex-error hidden"></div>
+            </div>
+
+            <!-- Test String -->
+            <div class="regex-section">
+              <label class="regex-section-label">Test String</label>
+              <textarea id="regexTestString" class="regex-test-input"
+                placeholder="Enter text to test against the pattern..." rows="4"></textarea>
+            </div>
+
+            <!-- Results -->
+            <div class="regex-section">
+              <label class="regex-section-label">
+                Matches
+                <span id="matchCount" class="regex-match-count">(0)</span>
+              </label>
+              <div id="regexHighlight" class="regex-highlight-area">
+                <span class="regex-placeholder">Matches will be highlighted here...</span>
+              </div>
+            </div>
+
+            <!-- Match Details -->
+            <div class="regex-section">
+              <label class="regex-section-label">Match Details</label>
+              <div id="regexMatchDetails" class="regex-match-details">
+                <span class="regex-placeholder">No matches yet</span>
+              </div>
+            </div>
+
+            <!-- Common Patterns -->
+            <div class="regex-section">
+              <label class="regex-section-label">Common Patterns</label>
+              <div class="regex-common-patterns">
+                <button class="regex-pattern-btn" data-pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                  data-flags="g">Email</button>
+                <button class="regex-pattern-btn" data-pattern="https?://[^\s]+" data-flags="g">URL</button>
+                <button class="regex-pattern-btn" data-pattern="^(((?!25?[6-9])[12]\d|[1-9])?\d\.?\b){4}$"
+                  data-flags="g">IPv4</button>
+                <button class="regex-pattern-btn" data-pattern="^\+?[\d\s\-()]{10,}" data-flags="gm">Phone</button>
+                <button class="regex-pattern-btn" data-pattern="#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\b" data-flags="g">Hex
+                  Color</button>
+                <button class="regex-pattern-btn" data-pattern="\d{4}-\d{2}-\d{2}" data-flags="g">Date
+                  (YYYY-MM-DD)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Hidden file inputs for storage import -->

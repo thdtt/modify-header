@@ -9,6 +9,8 @@ import * as jwtPlayground from "./modules/jwtPlayground.js";
 import * as secretGenerator from "./modules/secretGenerator.js";
 import * as autoClick from "./modules/autoClick.js";
 import * as qrReader from "./modules/qrReader.js";
+import * as epochConverter from "./modules/epochConverter.js";
+import * as regexTester from "./modules/regexTester.js";
 
 // Initialize all modules
 document.addEventListener("DOMContentLoaded", () => {
@@ -26,6 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	secretGenerator.init();
 	autoClick.init();
 	qrReader.init();
+	epochConverter.init();
+	regexTester.init();
 
 	// Restore playground states
 	restorePlaygroundStates();
@@ -38,4 +42,5 @@ function restorePlaygroundStates() {
 	secretGenerator.restoreState();
 	autoClick.restoreState();
 	qrReader.restoreState();
+	regexTester.restoreState();
 }
